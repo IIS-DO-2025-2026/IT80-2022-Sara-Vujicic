@@ -5,8 +5,8 @@ import java.awt.Graphics;
 
 public class Donut extends Circle {
 	private int innerRadius;
-	private Color outerColor;
-	private Color borderColor;
+	private Color outerColor = Color.YELLOW;
+	private Color borderColor = Color.BLUE;
 
 	public Donut() {
 	}
@@ -72,10 +72,6 @@ public class Donut extends Circle {
 
 	}
 
-	// String s = new String();
-	// Circle c = new Circle();
-	// Circle c = new Circle(3,2);
-	// Circle x = super.getCenter();
 	public int compareTo(Object obj) {
 		if (obj instanceof Donut) {
 			Donut d = (Donut) obj;

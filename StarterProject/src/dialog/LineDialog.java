@@ -63,10 +63,10 @@ public class LineDialog extends JDialog {
 		add(startPointYField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		add(new JLabel("End Point "), gbc);
 
-		gbc.gridy = 4;
+		gbc.gridy = 5;
 		add(new JLabel("X: "), gbc);
 		gbc.gridx = 1;
 		JTextField endPointXField = new JTextField();
@@ -77,7 +77,7 @@ public class LineDialog extends JDialog {
 		add(endPointXField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 5;
+		gbc.gridy = 6;
 		add(new JLabel("Y: "), gbc);
 		gbc.gridx = 1;
 		JTextField endPointYField = new JTextField();
@@ -88,11 +88,14 @@ public class LineDialog extends JDialog {
 		add(endPointYField, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 6;
+		gbc.gridy = 8;
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
 			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
+		lineColorChooser.setMinimumSize(new Dimension(200, 20));
+		lineColorChooser.setMaximumSize(new Dimension(200, 20));
+		lineColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(lineColorChooser, gbc);
 
 		setLocationRelativeTo(null);
@@ -128,7 +131,10 @@ public class LineDialog extends JDialog {
 
 		modifyButton.addActionListener(modifyAction);
 		gbc.gridx = 1;
-		gbc.gridy = 8;
+		gbc.gridy = 10;
+		modifyButton.setMinimumSize(new Dimension(200, 20));
+		modifyButton.setMaximumSize(new Dimension(200, 20));
+		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
 
 		setVisible(true);

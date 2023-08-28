@@ -106,6 +106,7 @@ public class Rectangle extends Shape {
 
 	@Override
 	public void draw(Graphics g) {
+		g.setColor(color);
 		g.drawRect(upperLeftPoint.getX(), upperLeftPoint.getY(), width, height);
 	}
 

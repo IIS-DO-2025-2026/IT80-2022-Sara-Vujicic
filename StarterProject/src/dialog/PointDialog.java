@@ -47,7 +47,7 @@ public class PointDialog extends JDialog {
 		add(xField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.weightx = 1;
 		add(new JLabel("Y: "), gbc);
 
@@ -60,11 +60,14 @@ public class PointDialog extends JDialog {
 		add(yField, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 2;
+		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
 			pointChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
+		pointColorChooser.setMinimumSize(new Dimension(200, 20));
+		pointColorChooser.setMaximumSize(new Dimension(200, 20));
+		pointColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(pointColorChooser, gbc);
 
 		setLocationRelativeTo(null);
@@ -94,7 +97,10 @@ public class PointDialog extends JDialog {
 
 		modifyButton.addActionListener(modifyAction);
 		gbc.gridx = 1;
-		gbc.gridy = 3;
+		gbc.gridy = 6;
+		modifyButton.setMinimumSize(new Dimension(200, 20));
+		modifyButton.setMaximumSize(new Dimension(200, 20));
+		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
 
 		setVisible(true);

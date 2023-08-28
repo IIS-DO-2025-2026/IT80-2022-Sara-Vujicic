@@ -47,7 +47,7 @@ public class RectangleDialog extends JDialog {
 		add(widthField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		add(new JLabel("Height: "), gbc);
 
 		gbc.gridx = 1;
@@ -83,7 +83,10 @@ public class RectangleDialog extends JDialog {
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 2;
+		gbc.gridy = 4;
+		saveButton.setMinimumSize(new Dimension(200, 20));
+		saveButton.setMaximumSize(new Dimension(200, 20));
+		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
 
 	}
@@ -99,7 +102,7 @@ public class RectangleDialog extends JDialog {
 		gbc.gridy = 0;
 		add(new JLabel("Upper Left Point: "), gbc);
 
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		add(new JLabel("X: "), gbc);
 
 		gbc.gridx = 1;
@@ -112,7 +115,7 @@ public class RectangleDialog extends JDialog {
 		add(xField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 3;
 		add(new JLabel("Y: "), gbc);
 
 		gbc.gridx = 1;
@@ -125,7 +128,7 @@ public class RectangleDialog extends JDialog {
 		add(yField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 5;
 		add(new JLabel("Width: "), gbc);
 
 		gbc.gridx = 1;
@@ -137,7 +140,7 @@ public class RectangleDialog extends JDialog {
 		add(widthField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 4;
+		gbc.gridy = 7;
 		add(new JLabel("Height: "), gbc);
 
 		gbc.gridx = 1;
@@ -149,19 +152,25 @@ public class RectangleDialog extends JDialog {
 		add(heightField, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 5;
+		gbc.gridy = 9;
 		JButton colorChooser = new JButton("Color");
 		colorChooser.addActionListener(e -> {
 			choosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
+		colorChooser.setMinimumSize(new Dimension(200, 20));
+		colorChooser.setMaximumSize(new Dimension(200, 20));
+		colorChooser.setPreferredSize(new Dimension(200, 20));
 		add(colorChooser, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 6;
+		gbc.gridy = 11;
 		JButton innerColorChooser = new JButton("Inner Color");
 		innerColorChooser.addActionListener(e -> {
 			innerChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
+		innerColorChooser.setMinimumSize(new Dimension(200, 20));
+		innerColorChooser.setMaximumSize(new Dimension(200, 20));
+		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
 		setLocationRelativeTo(null);
@@ -186,7 +195,7 @@ public class RectangleDialog extends JDialog {
 					rectangle.setInnerColor(innerChoosedColor);
 
 					mainPanel.getAllShapesOnPanel().add(rectangle);
-					rectangle.draw(getGraphics());
+					rectangle.draw(mainPanel.getGraphics());
 
 					dispose();
 
@@ -198,7 +207,10 @@ public class RectangleDialog extends JDialog {
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 7;
+		gbc.gridy = 13;
+		saveButton.setMinimumSize(new Dimension(200, 20));
+		saveButton.setMaximumSize(new Dimension(200, 20));
+		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
 
 	}

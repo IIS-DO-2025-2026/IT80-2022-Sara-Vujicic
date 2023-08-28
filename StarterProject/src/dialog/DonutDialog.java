@@ -47,7 +47,7 @@ public class DonutDialog extends JDialog {
 		add(innerRadiusField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		add(new JLabel("Out Radius: "), gbc);
 
 		gbc.gridx = 1;
@@ -87,8 +87,11 @@ public class DonutDialog extends JDialog {
 			}
 		};
 		saveButton.addActionListener(saveAction);
-		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridx = 1;
+		gbc.gridy = 4;
+		saveButton.setMinimumSize(new Dimension(200, 20));
+		saveButton.setMaximumSize(new Dimension(200, 20));
+		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
 
 	}
@@ -129,7 +132,7 @@ public class DonutDialog extends JDialog {
 		add(yField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		add(new JLabel("Out Radius: "), gbc);
 
 		gbc.gridx = 1;
@@ -142,7 +145,7 @@ public class DonutDialog extends JDialog {
 		add(outRadiusField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 4;
+		gbc.gridy = 6;
 		add(new JLabel("Inner Radius: "), gbc);
 
 		gbc.gridx = 1;
@@ -154,23 +157,26 @@ public class DonutDialog extends JDialog {
 
 		add(innerRadiusField, gbc);
 
-		gbc.gridx = 0;
-		gbc.gridy = 5;
-		add(new JLabel("Outler Color: "), gbc);
-
+		gbc.gridy = 8;
 		gbc.gridx = 1;
 		JButton outerColorChooser = new JButton("Outer color");
 		outerColorChooser.addActionListener(e -> {
 			outerChosedColor = JColorChooser.showDialog(null, "Choose your outer color", Color.GRAY);
 		});
+		outerColorChooser.setMinimumSize(new Dimension(200, 20));
+		outerColorChooser.setMaximumSize(new Dimension(200, 20));
+		outerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(outerColorChooser, gbc);
 
-		gbc.gridx = 0;
-		gbc.gridy = 6;
+		gbc.gridx = 1;
+		gbc.gridy = 10;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
 			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", Color.BLACK);
 		});
+		innerColorChooser.setMinimumSize(new Dimension(200, 20));
+		innerColorChooser.setMaximumSize(new Dimension(200, 20));
+		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
 		setLocationRelativeTo(null);
@@ -208,7 +214,10 @@ public class DonutDialog extends JDialog {
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 8;
+		gbc.gridy = 12;
+		saveButton.setMinimumSize(new Dimension(200, 20));
+		saveButton.setMaximumSize(new Dimension(200, 20));
+		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
 
 	}

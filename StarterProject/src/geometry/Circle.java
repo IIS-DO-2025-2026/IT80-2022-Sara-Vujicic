@@ -6,7 +6,7 @@ import java.awt.Graphics;
 public class Circle extends Shape {
 	private Point center;
 	private int radius;
-	private Color color=Color.YELLOW; //innerColor
+	private Color color=Color.BLACK; //innerColor
 	private Color borderColor;		//outlineColor
 	
 	
@@ -97,6 +97,7 @@ public class Circle extends Shape {
 
 	@Override
 	public void draw(Graphics g) {
+		g.setColor(color);
 		g.drawOval(center.getX() - radius, center.getY() - radius, radius *2, radius*2);		
 	}
 	@Override
