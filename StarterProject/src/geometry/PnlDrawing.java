@@ -337,8 +337,12 @@ public class PnlDrawing extends JPanel implements MouseListener {
 	protected void delete() {
 		Shape selectedShape = (Shape) getSelectedShape();
 		if (selectedShape != null) {
-			getAllShapesOnPanel().remove(selectedShape);
-			repaint();
+			int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this shape?", "Confirm",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.YES_OPTION) {
+				getAllShapesOnPanel().remove(selectedShape);
+				repaint();
+			} 
 		}
 	}
 
