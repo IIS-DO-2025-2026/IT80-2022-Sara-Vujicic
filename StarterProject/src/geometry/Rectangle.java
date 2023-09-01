@@ -7,8 +7,8 @@ public class Rectangle extends Shape {
 	private Point upperLeftPoint;
 	private int width;
 	private int height;
-	private Color color = Color.black;
-	private Color innerColor;
+	private Color borderColor = Color.BLACK;
+	private Color innerColor = Color.WHITE;
 
 	public Rectangle() {
 	}
@@ -20,9 +20,9 @@ public class Rectangle extends Shape {
 
 	}
 
-	public Rectangle(Point upperLeftPoint, int width, int height, Color color, Color innerColor, boolean selected) {
+	public Rectangle(Point upperLeftPoint, int width, int height, Color borderColor, Color innerColor, boolean selected) {
 		this(upperLeftPoint, width, height);
-		this.color = color;
+		this.borderColor = borderColor;
 		this.innerColor = innerColor;
 		this.selected = selected;
 	}
@@ -53,7 +53,7 @@ public class Rectangle extends Shape {
 		}
 	}
 
-	// objasniti
+
 	public boolean contains(int x, int y) {
 		return (x >= upperLeftPoint.getX() && x <= upperLeftPoint.getX() + width && y >= upperLeftPoint.getY()
 				&& y <= upperLeftPoint.getY() + height);
@@ -87,12 +87,12 @@ public class Rectangle extends Shape {
 		this.height = height;
 	}
 
-	public Color getColor() {
-		return this.color;
+	public Color getBorderColor() {
+		return borderColor;
 	}
 
-	public void setColor(Color color) {
-		this.color = color;
+	public void setBorderColor(Color borderColor) {
+		this.borderColor = borderColor;
 	}
 
 	public Color getInnerColor() {
@@ -106,7 +106,9 @@ public class Rectangle extends Shape {
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(color);
+		g.setColor(innerColor);
+		g.fillRect(upperLeftPoint.getX(), upperLeftPoint.getY(), width, height);
+		g.setColor(borderColor);
 		g.drawRect(upperLeftPoint.getX(), upperLeftPoint.getY(), width, height);
 	}
 

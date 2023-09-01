@@ -23,7 +23,7 @@ public class LineDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color lineChoosedColor;
+	private Color lineChoosedColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
 	public LineDialog(Line line, PnlDrawing mainPanel) {
@@ -37,7 +37,7 @@ public class LineDialog extends JDialog {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		add(new JLabel("First Point "), gbc);
+		add(new JLabel("Start Point "), gbc);
 
 		gbc.gridy = 1;
 		add(new JLabel("X: "), gbc);
@@ -91,7 +91,7 @@ public class LineDialog extends JDialog {
 		gbc.gridy = 8;
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
-			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", line.getColor());
 		});
 		lineColorChooser.setMinimumSize(new Dimension(200, 20));
 		lineColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -105,26 +105,72 @@ public class LineDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Integer startPointX = Integer.parseInt(startPointXField.getText());
-					Integer startPointY = Integer.parseInt(startPointYField.getText());
+				String startPointXFieldText = startPointXField.getText();
+				String startPointYFieldText = startPointYField.getText();
 
-					Integer endPointX = Integer.parseInt(endPointXField.getText());
-					Integer endPointY = Integer.parseInt(endPointYField.getText());
+				String endPointXFieldText = endPointXField.getText();
+				String endPointYFieldText = endPointYField.getText();
+				boolean hasError = false;
 
-					Point startPoint = new Point(startPointX, startPointY);
-					Point endPoint = new Point(endPointX, endPointY);
+				if (startPointXFieldText.isBlank() && startPointYFieldText.isBlank() && endPointXFieldText.isBlank()
+						&& endPointYFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter start and end point");
+					hasError = true;
+				} else if (startPointXFieldText.isBlank() && startPointYFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter start point");
+					hasError = true;
+				} else if (endPointXFieldText.isBlank() && endPointYFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter end point");
+					hasError = true;
+				} else if (startPointXFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter X for start point");
+					hasError = true;
+				} else if (startPointYFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter Y for start point");
+					hasError = true;
+				} else if (endPointXFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter X for end point");
+					hasError = true;
+				} else if (endPointYFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Please enter Y for end point");
+					hasError = true;
+				}
 
-					line.setStartPoint(startPoint);
-					line.setEndPoint(endPoint);
-					line.setColor(lineChoosedColor);
+				if (!hasError) {
+					try {
+						Integer startPointX = Integer.parseInt(startPointXFieldText);
+						Integer startPointY = Integer.parseInt(startPointYFieldText);
 
-					mainPanel.getAllShapesOnPanel().add(line);
-					line.draw(mainPanel.getGraphics());
+						Integer endPointX = Integer.parseInt(endPointXFieldText);
+						Integer endPointY = Integer.parseInt(endPointYFieldText);
 
-					dispose();
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+						if (startPointX < 0) {
+							JOptionPane.showMessageDialog(null, "Start point X cannot be negative number!");
+						} else if (startPointY < 0) {
+							JOptionPane.showMessageDialog(null, "Start point Y cannot be negative number!");
+						} else if (endPointX < 0) {
+							JOptionPane.showMessageDialog(null, "End point X cannot be negative number!");
+						} else if (endPointY < 0) {
+							JOptionPane.showMessageDialog(null, "End point Y cannot be negative number!");
+						} else if (startPointX == endPointX && startPointY == endPointY) {
+							JOptionPane.showMessageDialog(null, "Start and end point cannot be the same");
+						} else {
+							Point startPoint = new Point(startPointX, startPointY);
+							Point endPoint = new Point(endPointX, endPointY);
+
+							line.setStartPoint(startPoint);
+							line.setEndPoint(endPoint);
+							line.setColor(lineChoosedColor);
+
+							mainPanel.getAllShapesOnPanel().add(line);
+							line.draw(mainPanel.getGraphics());
+
+							dispose();
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null,
+								"Invalid input! X and Y for start and end point must be number");
+					}
 				}
 			}
 		};

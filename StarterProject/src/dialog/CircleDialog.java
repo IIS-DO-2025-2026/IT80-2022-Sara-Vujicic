@@ -24,8 +24,8 @@ public class CircleDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Color innerChosedColor;
-	private Color outerChosedColor;
+	private Color innerChosedColor = Color.WHITE;
+	private Color borderChosedColor = Color.BLACK;
 
 	public CircleDialog(Point point, PnlDrawing mainPanel) {
 
@@ -55,15 +55,29 @@ public class CircleDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Integer radius = Integer.parseInt(radiusField.getText());
+				String radiusFieldText = radiusField.getText();
+				boolean hasError = false;
 
-					Circle circle = new Circle(point, radius);
-					circle.draw(mainPanel.getGraphics());
-					mainPanel.getAllShapesOnPanel().add(circle);
-					dispose();
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+				if (radiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Radius field cannot be blank.");
+					hasError = true;
+				}
+				if (!hasError) {
+					try {
+						Integer radius = Integer.parseInt(radiusFieldText);
+						if (radius < 0) {
+							JOptionPane.showMessageDialog(null, "Radius cannot be negative number!");
+						} else if (radius == 0) {
+							JOptionPane.showMessageDialog(null, "Radius cannot be zero!");
+						} else {
+							Circle circle = new Circle(point, radius);
+							circle.draw(mainPanel.getGraphics());
+							mainPanel.getAllShapesOnPanel().add(circle);
+							dispose();
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input. Radius filed cannot convert to integer.");
+					}
 				}
 			}
 		};
@@ -129,7 +143,7 @@ public class CircleDialog extends JDialog {
 		gbc.gridy = 6;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", Color.BLACK);
+			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", circle.getInnerColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -138,14 +152,14 @@ public class CircleDialog extends JDialog {
 
 		gbc.gridx = 1;
 		gbc.gridy = 8;
-		JButton outerColorChooser = new JButton("Outer color");
-		outerColorChooser.addActionListener(e -> {
-			outerChosedColor = JColorChooser.showDialog(null, "Choose your outer color", Color.BLACK);
+		JButton borderColorChooser = new JButton("Border color");
+		borderColorChooser.addActionListener(e -> {
+			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", circle.getBorderColor());
 		});
-		outerColorChooser.setMinimumSize(new Dimension(200, 20));
-		outerColorChooser.setMaximumSize(new Dimension(200, 20));
-		outerColorChooser.setPreferredSize(new Dimension(200, 20));
-		add(outerColorChooser, gbc);
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
 
 		setLocationRelativeTo(null);
 
@@ -154,25 +168,55 @@ public class CircleDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Integer x = Integer.parseInt(xField.getText());
-					Integer y = Integer.parseInt(yField.getText());
-					Integer radius = Integer.parseInt(radiusField.getText());
-					Color innerColor = innerChosedColor;
-					Color outlineColor = outerChosedColor;
+				String xFieldText = xField.getText();
+				String yFieldText = yField.getText();
+				String radiusFieldText = radiusField.getText();
+				boolean hasError = false;
+				if (xFieldText.isBlank() && yFieldText.isBlank() && radiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "X, Y and radius for circle cannot be blank.");
+					hasError = true;
+				} else if (xFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "X field cannot be blank.");
+					hasError = true;
+				} else if (yFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Y field cannot be blank.");
+					hasError = true;
+				} else if (radiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Radius field cannot be blank.");
+					hasError = true;
+				}
+				if (!hasError) {
+					try {
+						Integer x = Integer.parseInt(xField.getText());
+						Integer y = Integer.parseInt(yField.getText());
+						Integer radius = Integer.parseInt(radiusField.getText());
 
-					Point point = new Point(x, y);
+						if (x < 0) {
+							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
+						} else if (y < 0) {
+							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
+						} else if (radius < 0) {
+							JOptionPane.showMessageDialog(null, "Radius cannot be negative number!");
+						} else if (radius == 0) {
+							JOptionPane.showMessageDialog(null, "Radius cannot be zero!");
+						} else {
+							Color innerColor = innerChosedColor;
+							Color borderColor = borderChosedColor;
 
-					circle.setCenter(point);
-					circle.setRadius(radius);
-					circle.setColor(innerColor);
-					circle.setBorderColor(outlineColor);
-					mainPanel.getAllShapesOnPanel().add(circle);
-					circle.draw(mainPanel.getGraphics());
+							Point point = new Point(x, y);
 
-					dispose();
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+							circle.setCenter(point);
+							circle.setRadius(radius);
+							circle.setInnerColor(innerColor);
+							circle.setBorderColor(borderColor);
+							mainPanel.getAllShapesOnPanel().add(circle);
+							circle.draw(mainPanel.getGraphics());
+
+							dispose();
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input! Cannot convert X, Y and radius to integer");
+					}
 				}
 			}
 		};

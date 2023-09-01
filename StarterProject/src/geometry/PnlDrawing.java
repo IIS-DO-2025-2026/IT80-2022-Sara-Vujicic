@@ -172,7 +172,7 @@ public class PnlDrawing extends JPanel implements MouseListener {
 			public void actionPerformed(ActionEvent e) {
 				delete();
 				tglBtnSelect.setSelected(false);
-
+				setSelectedShape(null);
 			}
 
 		});
@@ -183,7 +183,6 @@ public class PnlDrawing extends JPanel implements MouseListener {
 		PnlDrawing tmpDrawing = this;
 		addMouseListener(new MouseAdapter() {
 
-			@SuppressWarnings("unused")
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int x = e.getX();
@@ -246,7 +245,6 @@ public class PnlDrawing extends JPanel implements MouseListener {
 	 * }
 	 */
 
-	@SuppressWarnings("unused")
 	@Override
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX();
@@ -290,7 +288,6 @@ public class PnlDrawing extends JPanel implements MouseListener {
 		return allShapesOnPanel;
 	}
 
-	@SuppressWarnings({ "unused" })
 	protected void modify() {
 		PnlDrawing tmpDrawing = this;
 		Shape selectedShape = (Shape) getSelectedShape();
@@ -298,7 +295,7 @@ public class PnlDrawing extends JPanel implements MouseListener {
 			if (selectedShape instanceof Point) {
 				Point p = (Point) selectedShape;
 				PointDialog dialog = new PointDialog(p, tmpDrawing);
-				getAllShapesOnPanel().remove(selectedShape);
+				getAllShapesOnPanel().remove(p);
 				tglBtnSelect.setSelected(false);
 				repaint();
 
@@ -342,7 +339,11 @@ public class PnlDrawing extends JPanel implements MouseListener {
 			if (result == JOptionPane.YES_OPTION) {
 				getAllShapesOnPanel().remove(selectedShape);
 				repaint();
-			} 
+			}
+		} else {
+			JOptionPane.showMessageDialog(null, "Please select what you want to delete!", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			tglBtnSelect.setSelected(true);
 		}
 	}
 

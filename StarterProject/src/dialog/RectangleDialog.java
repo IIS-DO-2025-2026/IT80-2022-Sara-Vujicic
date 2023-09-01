@@ -23,8 +23,8 @@ public class RectangleDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color choosedColor;
-	private Color innerChoosedColor;
+	private Color borderChoosedColor = Color.BLACK;
+	private Color innerChoosedColor = Color.WHITE;
 	private static final long serialVersionUID = 1L;
 
 	public RectangleDialog(Point point, PnlDrawing mainPanel) {
@@ -66,19 +66,44 @@ public class RectangleDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					int width = Integer.parseInt(widthField.getText());
-					int height = Integer.parseInt(heightField.getText());
-
-					Rectangle rectangle = new Rectangle(point, width, height);
-					rectangle.draw(mainPanel.getGraphics());
-					mainPanel.getAllShapesOnPanel().add(rectangle);
-					dispose();
-
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+				String widthFieldText = widthField.getText();
+				String heightFieldText = heightField.getText();
+				boolean hasError = false;
+				if (widthFieldText.isBlank() && heightFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Width and height cannot be blank!");
+					hasError = true;
+				} else if (widthFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Width cannot be blank!");
+					hasError = true;
+				} else if (heightFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Height cannot be blank!");
+					hasError = true;
 				}
-				dispose();
+				if (!hasError) {
+					try {
+						int width = Integer.parseInt(widthFieldText);
+						int height = Integer.parseInt(heightFieldText);
+
+						if (width < 0) {
+							JOptionPane.showMessageDialog(null, "Width cannot be negative number!");
+						} else if (width == 0) {
+							JOptionPane.showMessageDialog(null, "Width cannot be zero!");
+						} else if (height < 0) {
+							JOptionPane.showMessageDialog(null, "Height cannot be negative number!");
+						} else if (height == 0) {
+							JOptionPane.showMessageDialog(null, "Height cannot be zero!");
+						} else {
+
+							Rectangle rectangle = new Rectangle(point, width, height);
+							rectangle.draw(mainPanel.getGraphics());
+							mainPanel.getAllShapesOnPanel().add(rectangle);
+							dispose();
+						}
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input!");
+					}
+				}
 			}
 		};
 		saveButton.addActionListener(saveAction);
@@ -153,20 +178,20 @@ public class RectangleDialog extends JDialog {
 
 		gbc.gridx = 1;
 		gbc.gridy = 9;
-		JButton colorChooser = new JButton("Color");
-		colorChooser.addActionListener(e -> {
-			choosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+		JButton borderColorChooser = new JButton("Border Color");
+		borderColorChooser.addActionListener(e -> {
+			borderChoosedColor = JColorChooser.showDialog(null, "Choose border color", rectangle.getBorderColor());
 		});
-		colorChooser.setMinimumSize(new Dimension(200, 20));
-		colorChooser.setMaximumSize(new Dimension(200, 20));
-		colorChooser.setPreferredSize(new Dimension(200, 20));
-		add(colorChooser, gbc);
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 11;
 		JButton innerColorChooser = new JButton("Inner Color");
 		innerColorChooser.addActionListener(e -> {
-			innerChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			innerChoosedColor = JColorChooser.showDialog(null, "Choose inner color", rectangle.getInnerColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -181,28 +206,69 @@ public class RectangleDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					int x = Integer.parseInt(xField.getText());
-					int y = Integer.parseInt(yField.getText());
-					Point point = new Point(x, y);
-					int width = Integer.parseInt(widthField.getText());
-					int height = Integer.parseInt(heightField.getText());
-
-					rectangle.setUpperLeftPoint(point);
-					rectangle.setWidth(width);
-					rectangle.setHeight(height);
-					rectangle.setColor(choosedColor);
-					rectangle.setInnerColor(innerChoosedColor);
-
-					mainPanel.getAllShapesOnPanel().add(rectangle);
-					rectangle.draw(mainPanel.getGraphics());
-
-					dispose();
-
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+				String widthFieldText = widthField.getText();
+				String heightFieldText = heightField.getText();
+				String xFieldText = xField.getText();
+				String yFieldText = yField.getText();
+				boolean hasError = false;
+				if (xFieldText.isBlank() && yFieldText.isBlank() && widthFieldText.isBlank()
+						&& heightFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Width and height, x and y cannot be blank!");
+					hasError = true;
+				} else if (xFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "X field cannot be blank!");
+					hasError = true;
+				} else if (yFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Y field cannot be blank!");
+					hasError = true;
+				} else if (widthFieldText.isBlank() && heightFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Width and height cannot be blank!");
+					hasError = true;
+				} else if (widthFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Width cannot be blank!");
+					hasError = true;
+				} else if (heightFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Height cannot be blank!");
+					hasError = true;
 				}
-				dispose();
+				if (!hasError) {
+					try {
+						int x = Integer.parseInt(xField.getText());
+						int y = Integer.parseInt(yField.getText());
+						Point point = new Point(x, y);
+						int width = Integer.parseInt(widthField.getText());
+						int height = Integer.parseInt(heightField.getText());
+
+						if (x < 0) {
+							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
+						} else if (y < 0) {
+							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
+						} else if (width < 0) {
+							JOptionPane.showMessageDialog(null, "Width cannot be negative number!");
+						} else if (width == 0) {
+							JOptionPane.showMessageDialog(null, "Width cannot be zero!");
+						} else if (height < 0) {
+							JOptionPane.showMessageDialog(null, "Height cannot be negative number!");
+						} else if (height == 0) {
+							JOptionPane.showMessageDialog(null, "Height cannot be zero!");
+						} else {
+
+							rectangle.setUpperLeftPoint(point);
+							rectangle.setWidth(width);
+							rectangle.setHeight(height);
+							rectangle.setBorderColor(borderChoosedColor);
+							rectangle.setInnerColor(innerChoosedColor);
+
+							mainPanel.getAllShapesOnPanel().add(rectangle);
+							rectangle.draw(mainPanel.getGraphics());
+
+							dispose();
+						}
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input!");
+					}
+				}
 			}
 		};
 		saveButton.addActionListener(saveAction);

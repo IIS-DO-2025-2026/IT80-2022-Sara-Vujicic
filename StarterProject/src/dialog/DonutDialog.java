@@ -24,8 +24,8 @@ public class DonutDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Color innerChosedColor;
-	private Color outerChosedColor;
+	private Color innerChosedColor = Color.WHITE;
+	private Color borderChosedColor = Color.BLACK;
 
 	public DonutDialog(Point point, PnlDrawing mainPanel) {
 		setTitle("Add Donut");
@@ -66,23 +66,48 @@ public class DonutDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					int innerRadius = Integer.parseInt(innerRadiusField.getText());
-					int outRadius = Integer.parseInt(outRadiusField.getText());
-					if (innerRadius > outRadius) {
-						JOptionPane.showMessageDialog(null, "Inner radius cannot be larger than outer!");
-					} else {
-						Donut donut = new Donut(point, outRadius, innerRadius);
-						donut.setBorderColor(innerChosedColor);
-						donut.setOuterColor(outerChosedColor);
-						donut.draw(mainPanel.getGraphics());
+				String innerRadiusFieldText = innerRadiusField.getText();
+				String outRadiusFieldText = outRadiusField.getText();
+				boolean hasError = false;
+				if (innerRadiusFieldText.isBlank() && outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Inner and out radius cannot be blank!");
+					hasError = true;
+				} else if (innerRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Inner radius cannot be blank!");
+					hasError = true;
+				} else if (outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Out radius cannot be blank!");
+					hasError = true;
+				}
+				if (!hasError) {
+					try {
+						int innerRadius = Integer.parseInt(innerRadiusFieldText);
+						int outRadius = Integer.parseInt(outRadiusFieldText);
+						if (innerRadius < 0) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be negative number!");
+						} else if (innerRadius == 0) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be zero!");
+						} else if (outRadius < 0) {
+							JOptionPane.showMessageDialog(null, "Out radius cannot be negative number!");
+						} else if (outRadius == 0) {
+							JOptionPane.showMessageDialog(null, "Out radius cannot be zero!");
+						} else if (innerRadius > outRadius) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be larger than outer!");
+						} else if (innerRadius == outRadius) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
+						} else {
+							Donut donut = new Donut(point, outRadius, innerRadius);
+							donut.setInnerColor(innerChosedColor);
+							donut.setBorderColor(borderChosedColor);
+							donut.draw(mainPanel.getGraphics());
 
-						mainPanel.getAllShapesOnPanel().add(donut);
-						dispose();
+							mainPanel.getAllShapesOnPanel().add(donut);
+							dispose();
+						}
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input!");
 					}
-
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
 				}
 			}
 		};
@@ -159,20 +184,20 @@ public class DonutDialog extends JDialog {
 
 		gbc.gridy = 8;
 		gbc.gridx = 1;
-		JButton outerColorChooser = new JButton("Outer color");
-		outerColorChooser.addActionListener(e -> {
-			outerChosedColor = JColorChooser.showDialog(null, "Choose your outer color", Color.GRAY);
+		JButton borderColorChooser = new JButton("Border color");
+		borderColorChooser.addActionListener(e -> {
+			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", donut.getBorderColor());
 		});
-		outerColorChooser.setMinimumSize(new Dimension(200, 20));
-		outerColorChooser.setMaximumSize(new Dimension(200, 20));
-		outerColorChooser.setPreferredSize(new Dimension(200, 20));
-		add(outerColorChooser, gbc);
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 10;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", Color.BLACK);
+			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", donut.getInnerColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -187,29 +212,74 @@ public class DonutDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					int x = Integer.parseInt(xField.getText());
-					int y = Integer.parseInt(yField.getText());
-					Point center = new Point(x, y);
-					int innerRadius = Integer.parseInt(innerRadiusField.getText());
-					int outRadius = Integer.parseInt(outRadiusField.getText());
-					Color outlerColor = outerChosedColor;
-					Color borderColor = innerChosedColor;
-
-					donut.setCenter(center);
-					donut.setRadius(outRadius);
-					donut.setInnerRadius(innerRadius);
-
-					donut.setOuterColor(outlerColor);
-					donut.setBorderColor(borderColor);
-					mainPanel.getAllShapesOnPanel().add(donut);
-					donut.draw(mainPanel.getGraphics());
-					dispose();
-
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+				String xFieldText = xField.getText();
+				String yFieldText = yField.getText();
+				String innerRadiusFieldText = innerRadiusField.getText();
+				String outRadiusFieldText = outRadiusField.getText();
+				boolean hasError = false;
+				if (xFieldText.isBlank() && yFieldText.isBlank() && innerRadiusFieldText.isBlank()
+						&& outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Inner and out radius and x,y cannot be blank!");
+					hasError = true;
+				} else if (innerRadiusFieldText.isBlank() && outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Inner and out radius cannot be blank!");
+					hasError = true;
+				} else if (innerRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Inner radius cannot be blank!");
+					hasError = true;
+				} else if (outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Out radius cannot be blank!");
+					hasError = true;
+				} else if (xFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "X field cannot be blank!");
+					hasError = true;
+				} else if (yFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Y field cannot be blank!");
+					hasError = true;
 				}
-				dispose();
+				if (!hasError) {
+					try {
+						int x = Integer.parseInt(xFieldText);
+						int y = Integer.parseInt(yFieldText);
+						Point center = new Point(x, y);
+						int innerRadius = Integer.parseInt(innerRadiusFieldText);
+						int outRadius = Integer.parseInt(outRadiusFieldText);
+						Color innerColor = innerChosedColor;
+						Color borderColor = borderChosedColor;
+
+						if (x < 0) {
+							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
+						} else if (y < 0) {
+							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
+						} else if (innerRadius < 0) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be negative number!");
+						} else if (innerRadius == 0) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be zero!");
+						} else if (outRadius < 0) {
+							JOptionPane.showMessageDialog(null, "Out radius cannot be negative number!");
+						} else if (outRadius == 0) {
+							JOptionPane.showMessageDialog(null, "Out radius cannot be zero!");
+						} else if (innerRadius > outRadius) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be larger than outer!");
+						} else if (innerRadius == outRadius) {
+							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
+						} else {
+							donut.setCenter(center);
+							donut.setRadius(outRadius);
+							donut.setInnerRadius(innerRadius);
+
+							donut.setInnerColor(innerColor);
+							donut.setBorderColor(borderColor);
+							mainPanel.getAllShapesOnPanel().add(donut);
+							donut.draw(mainPanel.getGraphics());
+							dispose();
+						}
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null,
+								"Invalid input! Cannot convert x, y, inner radius, out radius to integer!");
+					}
+				}
 			}
 		};
 		saveButton.addActionListener(saveAction);

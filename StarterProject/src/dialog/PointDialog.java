@@ -22,7 +22,7 @@ public class PointDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color pointChoosedColor;
+	private Color pointChoosedColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
 	public PointDialog(Point point, PnlDrawing mainPanel) {
@@ -63,7 +63,7 @@ public class PointDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
-			pointChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			pointChoosedColor = JColorChooser.showDialog(null, "Choose color", point.getColor());
 		});
 		pointColorChooser.setMinimumSize(new Dimension(200, 20));
 		pointColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -77,20 +77,42 @@ public class PointDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Integer x = Integer.parseInt(xField.getText());
-					Integer y = Integer.parseInt(yField.getText());
+				String xFieldText = xField.getText();
+				String yFieldText = yField.getText();
+				boolean hasError = false;
 
-					point.setX(x);
-					point.setY(y);
-					point.setColor(pointChoosedColor);
-					point.draw(mainPanel.getGraphics());
+				if (xFieldText.isBlank() && yFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! X Field and Y Field cannot be blank!");
+					hasError = true;
+				} else if (xFieldText.isEmpty() || xFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! X Field cannot be blank!");
+					hasError = true;
+				} else if (yFieldText.isEmpty() || yFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "Invalid input! Y Field cannot be blank!");
+					hasError = true;
+				}
+				if (!hasError) {
+					try {
+						Integer x = Integer.parseInt(xFieldText);
+						Integer y = Integer.parseInt(yFieldText);
 
-					mainPanel.getAllShapesOnPanel().add(point);
+						if (x < 0) {
+							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
+						} else if (y < 0) {
+							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
+						} else {
+							point.setX(x);
+							point.setY(y);
+							point.setColor(pointChoosedColor);
+							point.draw(mainPanel.getGraphics());
 
-					dispose();
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Invalid input!");
+							mainPanel.getAllShapesOnPanel().add(point);
+
+							dispose();
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Invalid input! X and Y must be number");
+					}
 				}
 			}
 		};
@@ -104,6 +126,7 @@ public class PointDialog extends JDialog {
 		add(modifyButton, gbc);
 
 		setVisible(true);
+
 	}
 
 }

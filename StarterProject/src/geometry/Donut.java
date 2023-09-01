@@ -5,8 +5,8 @@ import java.awt.Graphics;
 
 public class Donut extends Circle {
 	private int innerRadius;
-	private Color outerColor = Color.YELLOW;
-	private Color borderColor = Color.BLUE;
+	private Color innerColor = Color.WHITE;
+	private Color borderColor = Color.BLACK;
 
 	public Donut() {
 	}
@@ -25,7 +25,7 @@ public class Donut extends Circle {
 	@Override
 	public boolean contains(int x, int y) {
 		double dFromCenter = this.getCenter().distance(x, y);
-		return dFromCenter >this.innerRadius  && dFromCenter < getRadius() ;
+		return dFromCenter > this.innerRadius && dFromCenter < getRadius();
 	}
 
 	@Override
@@ -64,18 +64,24 @@ public class Donut extends Circle {
 		int centerX = super.getCenter().getX();
 		int centerY = super.getCenter().getY();
 		int outerRadius = super.getRadius();
-
-		g.setColor(outerColor);
+		super.draw(g);
+		
+		g.setColor(this.innerColor);
 		g.fillOval(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
-		g.setColor(borderColor);
+		g.setColor(this.borderColor);
+		g.drawOval(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
+		
+		g.setColor(Color.WHITE);
 		g.fillOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		g.setColor(this.borderColor);
+		g.drawOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
 
 	}
 
 	public int compareTo(Object obj) {
 		if (obj instanceof Donut) {
 			Donut d = (Donut) obj;
-			return (int) (super.area(getInnerRadius()) - d.area(getInnerRadius())); //TODO: radius?
+			return (int) (super.area(getInnerRadius()) - d.area(getInnerRadius()));
 		} else {
 			return 0;
 		}
@@ -89,16 +95,16 @@ public class Donut extends Circle {
 		this.innerRadius = innerRadius;
 	}
 
-	public void setOuterColor(Color color) {
-		this.outerColor = color;
+	public Color getInnerColor() {
+		return innerColor;
+	}
+
+	public void setInnerColor(Color innerColor) {
+		this.innerColor = innerColor;
 	}
 
 	public void setBorderColor(Color color) {
 		this.borderColor = color;
-	}
-
-	public Color getOuterColor() {
-		return this.outerColor;
 	}
 
 	public Color getBorderColor() {
