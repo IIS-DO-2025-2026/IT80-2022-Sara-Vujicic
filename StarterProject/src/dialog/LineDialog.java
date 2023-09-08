@@ -26,11 +26,63 @@ public class LineDialog extends JDialog {
 	private Color lineChoosedColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
+	public LineDialog(Point startPoint, Point endPoint, PnlDrawing mainPanel) {
+		setTitle("Add Line");
+		setSize(new Dimension(400, 200));
+		setLocationRelativeTo(mainPanel);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		setLayout(new GridBagLayout());
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+
+		JButton lineColorChooser = new JButton("Color");
+		lineColorChooser.addActionListener(e -> {
+			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+		});
+		lineColorChooser.setMinimumSize(new Dimension(200, 20));
+		lineColorChooser.setMaximumSize(new Dimension(200, 20));
+		lineColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(lineColorChooser, gbc);
+
+		setLocationRelativeTo(null);
+
+		JButton modifyButton = new JButton("Save");
+		ActionListener modifyAction = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Line line = new Line();
+				line.setStartPoint(startPoint);
+				line.setEndPoint(endPoint);
+				line.setColor(lineChoosedColor);
+				
+				mainPanel.getAllShapesOnPanel().add(line);
+				line.draw(mainPanel.getGraphics());
+
+				mainPanel.paint(mainPanel.getGraphics());
+				dispose();
+			}
+		};
+
+		modifyButton.addActionListener(modifyAction);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		modifyButton.setMinimumSize(new Dimension(200, 20));
+		modifyButton.setMaximumSize(new Dimension(200, 20));
+		modifyButton.setPreferredSize(new Dimension(200, 20));
+		add(modifyButton, gbc);
+
+		setVisible(true);
+	}
+
 	public LineDialog(Line line, PnlDrawing mainPanel) {
 
 		setTitle("Modify Line");
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(mainPanel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -157,6 +209,7 @@ public class LineDialog extends JDialog {
 						} else {
 							Point startPoint = new Point(startPointX, startPointY);
 							Point endPoint = new Point(endPointX, endPointY);
+							mainPanel.getAllShapesOnPanel().remove(line);
 
 							line.setStartPoint(startPoint);
 							line.setEndPoint(endPoint);
@@ -165,6 +218,7 @@ public class LineDialog extends JDialog {
 							mainPanel.getAllShapesOnPanel().add(line);
 							line.draw(mainPanel.getGraphics());
 
+							mainPanel.paint(mainPanel.getGraphics());
 							dispose();
 						}
 					} catch (Exception ex) {

@@ -1,34 +1,33 @@
 package gui;
 
-import java.awt.Color;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import geometry.PnlDrawing;
+import geometry.Shape;
 
 public class Frame extends JFrame {
+	PnlDrawing pnlDrawing = new PnlDrawing();
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    public Frame() {
+        setVisible(true);
 
-	private PnlDrawing pnlDrawing = new PnlDrawing();
+        setTitle("Vujicic Sara IT80/2022");
+        setBounds(100, 100, 734, 471);
 
-	public Frame() {
-		setVisible(true);
+        pnlDrawing.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(pnlDrawing);
+        pnlDrawing.setBackground(Color.WHITE);
 
-		setTitle("Vujicic Sara IT80/2022");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 734, 471);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
 
-		pnlDrawing.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(pnlDrawing);
-		pnlDrawing.setBackground(Color.WHITE);
-		
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);   
-
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		pnlDrawing.redraw();
 	}
 }

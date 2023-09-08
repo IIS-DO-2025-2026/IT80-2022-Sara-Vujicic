@@ -1,5 +1,6 @@
 package geometry;
 
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -36,6 +37,7 @@ public class PnlDrawing extends JPanel implements MouseListener {
 	JButton btnDelete;
 
 	public PnlDrawing() {
+
 		allShapesOnPanel = new ArrayList<>();
 		tglBtnPoint = new JToggleButton("Point");
 		tglBtnLine = new JToggleButton("Line");
@@ -149,10 +151,9 @@ public class PnlDrawing extends JPanel implements MouseListener {
 			public void actionPerformed(ActionEvent e) {
 
 				if (getSelectedShape() != null) {
-
-					modify();
 					selectedShape.setSelected(false);
 					tglBtnSelect.setSelected(false);
+					modify();
 
 				} else {
 					JOptionPane.showMessageDialog(null, "Please select what you want to modify!", "Error",
@@ -188,9 +189,9 @@ public class PnlDrawing extends JPanel implements MouseListener {
 				int x = e.getX();
 				int y = e.getY();
 				Point clickedPoint = new Point(x, y);
+
 				if (getTglBtnPoint().isSelected()) {
-					clickedPoint.draw(getGraphics());
-					newAddedShape = clickedPoint;
+					PointDialog pointDialog = new PointDialog(x, y, tmpDrawing);
 				} else if (getTglBtnLine().isSelected()) {
 					if (startPoint == null) {
 						startPoint = new Point(x, y);
@@ -199,12 +200,12 @@ public class PnlDrawing extends JPanel implements MouseListener {
 					}
 
 					if (startPoint != null && endPoint != null) {
-						Line clickedLine = new Line(startPoint, endPoint);
-						clickedLine.draw(getGraphics());
-						newAddedShape = clickedLine;
+						LineDialog lineDialog = new LineDialog(startPoint, endPoint, tmpDrawing);
+
 						startPoint = null;
 						endPoint = null;
 					}
+
 				} else if (getTglBtnRectangle().isSelected()) {
 					Point point = new Point(x, y);
 					RectangleDialog rectangleDialog = new RectangleDialog(point, tmpDrawing);
@@ -239,11 +240,12 @@ public class PnlDrawing extends JPanel implements MouseListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 7293514602652333768L;
-	/*
-	 * @Override public void paint(Graphics g) { super.paint(g);
-	 * 
-	 * }
-	 */
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		redraw();
+	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -289,46 +291,37 @@ public class PnlDrawing extends JPanel implements MouseListener {
 	}
 
 	protected void modify() {
-		PnlDrawing tmpDrawing = this;
 		Shape selectedShape = (Shape) getSelectedShape();
 		if (selectedShape != null) {
 			if (selectedShape instanceof Point) {
 				Point p = (Point) selectedShape;
-				PointDialog dialog = new PointDialog(p, tmpDrawing);
-				getAllShapesOnPanel().remove(p);
+				PointDialog dialog = new PointDialog(p, this);
 				tglBtnSelect.setSelected(false);
-				repaint();
-
 			} else if (selectedShape instanceof Line) {
 				Line line = (Line) selectedShape;
-				LineDialog dialog = new LineDialog(line, tmpDrawing);
-				getAllShapesOnPanel().remove(selectedShape);
+				LineDialog dialog = new LineDialog(line, this);
 				tglBtnSelect.setSelected(false);
-				repaint();
-
 			} else if (selectedShape instanceof Rectangle) {
 				Rectangle rect = (Rectangle) selectedShape;
-				RectangleDialog dialog = new RectangleDialog(rect, tmpDrawing);
-				getAllShapesOnPanel().remove(selectedShape);
+				RectangleDialog dialog = new RectangleDialog(rect, this);
 				tglBtnSelect.setSelected(false);
-				repaint();
-
 			} else if (selectedShape instanceof Donut) {
 				Donut donut = (Donut) selectedShape;
-				DonutDialog dialog = new DonutDialog(donut, tmpDrawing);
-				getAllShapesOnPanel().remove(selectedShape);
+				DonutDialog dialog = new DonutDialog(donut, this);
 				tglBtnSelect.setSelected(false);
-				repaint();
-
 			} else if (selectedShape instanceof Circle && (selectedShape instanceof Donut) == false) {
 				Circle circle = (Circle) selectedShape;
-				CircleDialog dialog = new CircleDialog(circle, tmpDrawing);
-				getAllShapesOnPanel().remove(selectedShape);
+				CircleDialog dialog = new CircleDialog(circle, this);
 				tglBtnSelect.setSelected(false);
-				repaint();
 			}
 		}
 
+	}
+
+	public void redraw() {
+		for (Shape shape : getAllShapesOnPanel()) {
+			shape.draw(getGraphics());
+		}
 	}
 
 	protected void delete() {
@@ -337,8 +330,9 @@ public class PnlDrawing extends JPanel implements MouseListener {
 			int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this shape?", "Confirm",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {
-				getAllShapesOnPanel().remove(selectedShape);
-				repaint();
+				allShapesOnPanel.remove(selectedShape);
+				setSelectedShape(null);
+				paint(getGraphics());
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Please select what you want to delete!", "Error",

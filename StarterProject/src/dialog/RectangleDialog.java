@@ -57,6 +57,29 @@ public class RectangleDialog extends JDialog {
 		heightField.setPreferredSize(new Dimension(200, 20));
 
 		add(heightField, gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		JButton borderColorChooser = new JButton("Border Color");
+		borderColorChooser.addActionListener(e -> {
+			borderChoosedColor = JColorChooser.showDialog(null, "Choose border color", point.getColor());
+		});
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy =4;
+		JButton innerColorChooser = new JButton("Inner Color");
+		innerColorChooser.addActionListener(e -> {
+			innerChoosedColor = JColorChooser.showDialog(null, "Choose inner color", point.getColor());
+		});
+		innerColorChooser.setMinimumSize(new Dimension(200, 20));
+		innerColorChooser.setMaximumSize(new Dimension(200, 20));
+		innerColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(innerColorChooser, gbc);
+
 
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -95,6 +118,8 @@ public class RectangleDialog extends JDialog {
 						} else {
 
 							Rectangle rectangle = new Rectangle(point, width, height);
+							rectangle.setBorderColor(borderChoosedColor);
+							rectangle.setInnerColor(innerChoosedColor);
 							rectangle.draw(mainPanel.getGraphics());
 							mainPanel.getAllShapesOnPanel().add(rectangle);
 							dispose();
@@ -108,7 +133,7 @@ public class RectangleDialog extends JDialog {
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 4;
+		gbc.gridy = 5;
 		saveButton.setMinimumSize(new Dimension(200, 20));
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
@@ -252,6 +277,7 @@ public class RectangleDialog extends JDialog {
 						} else if (height == 0) {
 							JOptionPane.showMessageDialog(null, "Height cannot be zero!");
 						} else {
+							mainPanel.getAllShapesOnPanel().remove(rectangle);
 
 							rectangle.setUpperLeftPoint(point);
 							rectangle.setWidth(width);
@@ -262,9 +288,9 @@ public class RectangleDialog extends JDialog {
 							mainPanel.getAllShapesOnPanel().add(rectangle);
 							rectangle.draw(mainPanel.getGraphics());
 
+							mainPanel.paint(mainPanel.getGraphics());
 							dispose();
 						}
-
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, "Invalid input!");
 					}

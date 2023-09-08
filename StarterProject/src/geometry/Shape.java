@@ -28,6 +28,7 @@ public abstract class Shape implements Moveable, Comparable<Object>{
 
 	public void moveTo(int x, int y) {}
 	
+
 	
 
 }

@@ -57,6 +57,29 @@ public class DonutDialog extends JDialog {
 		outRadiusField.setPreferredSize(new Dimension(200, 20));
 
 		add(outRadiusField, gbc);
+		
+		gbc.gridy = 3;
+		gbc.gridx = 1;
+		JButton borderColorChooser = new JButton("Border color");
+		borderColorChooser.addActionListener(e -> {
+			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
+		});
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 4;
+		JButton innerColorChooser = new JButton("Inner color");
+		innerColorChooser.addActionListener(e -> {
+			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
+		});
+		innerColorChooser.setMinimumSize(new Dimension(200, 20));
+		innerColorChooser.setMaximumSize(new Dimension(200, 20));
+		innerColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(innerColorChooser, gbc);
+
 
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -113,7 +136,7 @@ public class DonutDialog extends JDialog {
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 4;
+		gbc.gridy = 5;
 		saveButton.setMinimumSize(new Dimension(200, 20));
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
@@ -264,6 +287,8 @@ public class DonutDialog extends JDialog {
 						} else if (innerRadius == outRadius) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
+							mainPanel.getAllShapesOnPanel().remove(donut);
+
 							donut.setCenter(center);
 							donut.setRadius(outRadius);
 							donut.setInnerRadius(innerRadius);
@@ -272,6 +297,8 @@ public class DonutDialog extends JDialog {
 							donut.setBorderColor(borderColor);
 							mainPanel.getAllShapesOnPanel().add(donut);
 							donut.draw(mainPanel.getGraphics());
+
+							mainPanel.paint(mainPanel.getGraphics());
 							dispose();
 						}
 

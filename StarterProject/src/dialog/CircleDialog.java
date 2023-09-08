@@ -47,6 +47,29 @@ public class CircleDialog extends JDialog {
 		radiusField.setMaximumSize(new Dimension(200, 20));
 		radiusField.setPreferredSize(new Dimension(200, 20));
 		add(radiusField, gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		JButton innerColorChooser = new JButton("Inner color");
+		innerColorChooser.addActionListener(e -> {
+			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
+		});
+		innerColorChooser.setMinimumSize(new Dimension(200, 20));
+		innerColorChooser.setMaximumSize(new Dimension(200, 20));
+		innerColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(innerColorChooser, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		JButton borderColorChooser = new JButton("Border color");
+		borderColorChooser.addActionListener(e -> {
+			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
+		});
+		borderColorChooser.setMinimumSize(new Dimension(200, 20));
+		borderColorChooser.setMaximumSize(new Dimension(200, 20));
+		borderColorChooser.setPreferredSize(new Dimension(200, 20));
+		add(borderColorChooser, gbc);
+
 
 		setLocationRelativeTo(null);
 
@@ -70,7 +93,10 @@ public class CircleDialog extends JDialog {
 						} else if (radius == 0) {
 							JOptionPane.showMessageDialog(null, "Radius cannot be zero!");
 						} else {
+						
 							Circle circle = new Circle(point, radius);
+							circle.setInnerColor(innerChosedColor);
+							circle.setBorderColor(borderChosedColor);
 							circle.draw(mainPanel.getGraphics());
 							mainPanel.getAllShapesOnPanel().add(circle);
 							dispose();
@@ -84,7 +110,7 @@ public class CircleDialog extends JDialog {
 
 		modifyButton.addActionListener(modifyAction);
 		gbc.gridx = 1;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		modifyButton.setMinimumSize(new Dimension(200, 20));
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
@@ -205,6 +231,8 @@ public class CircleDialog extends JDialog {
 
 							Point point = new Point(x, y);
 
+							mainPanel.getAllShapesOnPanel().remove(circle);
+
 							circle.setCenter(point);
 							circle.setRadius(radius);
 							circle.setInnerColor(innerColor);
@@ -212,6 +240,7 @@ public class CircleDialog extends JDialog {
 							mainPanel.getAllShapesOnPanel().add(circle);
 							circle.draw(mainPanel.getGraphics());
 
+							mainPanel.paint(mainPanel.getGraphics());//preci
 							dispose();
 						}
 					} catch (Exception ex) {
