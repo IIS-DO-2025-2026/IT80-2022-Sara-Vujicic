@@ -6,30 +6,26 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
 import geometry.Line;
-import geometry.PnlDrawing;
 import geometry.Point;
 
 public class LineDialog extends JDialog {
-
-	/**
-	 * 
-	 */
-	private Color lineChosenColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
-	public LineDialog(Point startPoint, Point endPoint, PnlDrawing mainPanel) {
-		setTitle("Add Line");
+	private Color lineChosenColor = Color.BLACK;
+	private boolean confirmed = false;
+	private Line line;
+
+	public LineDialog(java.awt.Frame parent, Point startPoint, Point endPoint) {
+		super(parent, "Add Line", true);
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(mainPanel);
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -46,23 +42,19 @@ public class LineDialog extends JDialog {
 		lineColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(lineColorChooser, gbc);
 
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				Line line = new Line();
-				line.setStartPoint(startPoint);
-				line.setEndPoint(endPoint);
-				line.setColor(lineChosenColor);
+				Line l = new Line();
+				l.setStartPoint(startPoint);
+				l.setEndPoint(endPoint);
+				l.setColor(lineChosenColor);
 				
-				mainPanel.getAllShapesOnPanel().add(line);
-				line.draw(mainPanel.getGraphics());
-
-				mainPanel.paint(mainPanel.getGraphics());
+				LineDialog.this.line = l;
+				LineDialog.this.confirmed = true;
 				dispose();
 			}
 		};
@@ -74,15 +66,13 @@ public class LineDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
 	}
 
-	public LineDialog(Line line, PnlDrawing mainPanel) {
-
-		setTitle("Modify Line");
+	public LineDialog(java.awt.Frame parent, Line line) {
+		super(parent, "Modify Line", true);
+		this.lineChosenColor = line.getColor();
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(mainPanel);
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -150,16 +140,14 @@ public class LineDialog extends JDialog {
 		lineColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(lineColorChooser, gbc);
 
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String startPointXFieldText = startPointXField.getText();
 				String startPointYFieldText = startPointYField.getText();
-
 				String endPointXFieldText = endPointXField.getText();
 				String endPointYFieldText = endPointYField.getText();
 				boolean hasError = false;
@@ -192,7 +180,6 @@ public class LineDialog extends JDialog {
 					try {
 						Integer startPointX = Integer.parseInt(startPointXFieldText);
 						Integer startPointY = Integer.parseInt(startPointYFieldText);
-
 						Integer endPointX = Integer.parseInt(endPointXFieldText);
 						Integer endPointY = Integer.parseInt(endPointYFieldText);
 
@@ -207,18 +194,16 @@ public class LineDialog extends JDialog {
 						} else if (startPointX == endPointX && startPointY == endPointY) {
 							JOptionPane.showMessageDialog(null, "Start and end point cannot be the same");
 						} else {
-							Point startPoint = new Point(startPointX, startPointY);
-							Point endPoint = new Point(endPointX, endPointY);
-							mainPanel.getAllShapesOnPanel().remove(line);
+							Point start = new Point(startPointX, startPointY);
+							Point end = new Point(endPointX, endPointY);
+							
+							Line l = new Line();
+							l.setStartPoint(start);
+							l.setEndPoint(end);
+							l.setColor(lineChosenColor);
 
-							line.setStartPoint(startPoint);
-							line.setEndPoint(endPoint);
-							line.setColor(lineChosenColor);
-
-							mainPanel.getAllShapesOnPanel().add(line);
-							line.draw(mainPanel.getGraphics());
-
-							mainPanel.paint(mainPanel.getGraphics());
+							LineDialog.this.line = l;
+							LineDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
@@ -236,8 +221,13 @@ public class LineDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public Line getLine() {
+		return line;
+	}
 }

@@ -6,32 +6,27 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
 import geometry.Circle;
-import geometry.PnlDrawing;
 import geometry.Point;
 
 public class CircleDialog extends JDialog {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Color innerChosenColor = Color.WHITE;
 	private Color borderChosenColor = Color.BLACK;
+	private boolean confirmed = false;
+	private Circle circle;
 
-	public CircleDialog(Point point, PnlDrawing mainPanel) {
-
-		setTitle("Add Circle");
+	public CircleDialog(java.awt.Frame parent, Point point) {
+		super(parent, "Add Circle", true);
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -41,7 +36,6 @@ public class CircleDialog extends JDialog {
 		add(new JLabel("Radius: "), gbc);
 
 		gbc.gridx = 1;
-
 		JTextField radiusField = new JTextField();
 		radiusField.setMinimumSize(new Dimension(200, 20));
 		radiusField.setMaximumSize(new Dimension(200, 20));
@@ -70,12 +64,8 @@ public class CircleDialog extends JDialog {
 		borderColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(borderColorChooser, gbc);
 
-
-		setLocationRelativeTo(null);
-
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String radiusFieldText = radiusField.getText();
@@ -93,12 +83,11 @@ public class CircleDialog extends JDialog {
 						} else if (radius == 0) {
 							JOptionPane.showMessageDialog(null, "Radius cannot be zero!");
 						} else {
-						
-							Circle circle = new Circle(point, radius);
-							circle.setInnerColor(innerChosenColor);
-							circle.setBorderColor(borderChosenColor);
-							circle.draw(mainPanel.getGraphics());
-							mainPanel.getAllShapesOnPanel().add(circle);
+							Circle c = new Circle(point, radius);
+							c.setInnerColor(innerChosenColor);
+							c.setBorderColor(borderChosenColor);
+							CircleDialog.this.circle = c;
+							CircleDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
@@ -115,15 +104,14 @@ public class CircleDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
 	}
 
-	public CircleDialog(Circle circle, PnlDrawing mainPanel) {
-
-		setTitle("Modify Circle");
-		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(null);
+	public CircleDialog(java.awt.Frame parent, Circle circle) {
+		super(parent, "Modify Circle", true);
+		this.innerChosenColor = circle.getInnerColor();
+		this.borderChosenColor = circle.getBorderColor();
+		setSize(new Dimension(400, 250));
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -133,7 +121,6 @@ public class CircleDialog extends JDialog {
 		add(new JLabel("X: "), gbc);
 
 		gbc.gridx = 1;
-
 		JTextField xField = new JTextField();
 		xField.setText(String.valueOf(circle.getCenter().getX()));
 		xField.setMinimumSize(new Dimension(200, 20));
@@ -187,11 +174,8 @@ public class CircleDialog extends JDialog {
 		borderColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(borderColorChooser, gbc);
 
-		setLocationRelativeTo(null);
-
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String xFieldText = xField.getText();
@@ -226,21 +210,12 @@ public class CircleDialog extends JDialog {
 						} else if (radius == 0) {
 							JOptionPane.showMessageDialog(null, "Radius cannot be zero!");
 						} else {
-							Color innerColor = innerChosenColor;
-							Color borderColor = borderChosenColor;
-
 							Point point = new Point(x, y);
-
-							mainPanel.getAllShapesOnPanel().remove(circle);
-
-							circle.setCenter(point);
-							circle.setRadius(radius);
-							circle.setInnerColor(innerColor);
-							circle.setBorderColor(borderColor);
-							mainPanel.getAllShapesOnPanel().add(circle);
-							circle.draw(mainPanel.getGraphics());
-
-							mainPanel.paint(mainPanel.getGraphics());
+							Circle c = new Circle(point, radius);
+							c.setInnerColor(innerChosenColor);
+							c.setBorderColor(borderChosenColor);
+							CircleDialog.this.circle = c;
+							CircleDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
@@ -257,8 +232,13 @@ public class CircleDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public Circle getCircle() {
+		return circle;
+	}
 }

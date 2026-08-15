@@ -6,30 +6,27 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
 import geometry.Donut;
-import geometry.PnlDrawing;
 import geometry.Point;
 
 public class DonutDialog extends JDialog {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Color innerChosenColor = Color.WHITE;
 	private Color borderChosenColor = Color.BLACK;
+	private boolean confirmed = false;
+	private Donut donut;
 
-	public DonutDialog(Point point, PnlDrawing mainPanel) {
-		setTitle("Add Donut");
+	public DonutDialog(java.awt.Frame parent, Point point) {
+		super(parent, "Add Donut", true);
 		setSize(new Dimension(600, 400));
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -43,7 +40,6 @@ public class DonutDialog extends JDialog {
 		innerRadiusField.setMinimumSize(new Dimension(200, 20));
 		innerRadiusField.setMaximumSize(new Dimension(200, 20));
 		innerRadiusField.setPreferredSize(new Dimension(200, 20));
-
 		add(innerRadiusField, gbc);
 
 		gbc.gridx = 0;
@@ -55,7 +51,6 @@ public class DonutDialog extends JDialog {
 		outRadiusField.setMinimumSize(new Dimension(200, 20));
 		outRadiusField.setMaximumSize(new Dimension(200, 20));
 		outRadiusField.setPreferredSize(new Dimension(200, 20));
-
 		add(outRadiusField, gbc);
 		
 		gbc.gridy = 3;
@@ -80,13 +75,8 @@ public class DonutDialog extends JDialog {
 		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
-
-		setLocationRelativeTo(null);
-		setVisible(true);
-
 		JButton saveButton = new JButton("Save");
 		ActionListener saveAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String innerRadiusFieldText = innerRadiusField.getText();
@@ -119,15 +109,13 @@ public class DonutDialog extends JDialog {
 						} else if (innerRadius == outRadius) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
-							Donut donut = new Donut(point, outRadius, innerRadius);
-							donut.setInnerColor(innerChosenColor);
-							donut.setBorderColor(borderChosenColor);
-							donut.draw(mainPanel.getGraphics());
-
-							mainPanel.getAllShapesOnPanel().add(donut);
+							Donut d = new Donut(point, outRadius, innerRadius);
+							d.setInnerColor(innerChosenColor);
+							d.setBorderColor(borderChosenColor);
+							DonutDialog.this.donut = d;
+							DonutDialog.this.confirmed = true;
 							dispose();
 						}
-
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, "Invalid input!");
 					}
@@ -141,12 +129,14 @@ public class DonutDialog extends JDialog {
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
-
 	}
 
-	public DonutDialog(Donut donut, PnlDrawing mainPanel) {
-		setTitle("Modify Donut");
+	public DonutDialog(java.awt.Frame parent, Donut donut) {
+		super(parent, "Modify Donut", true);
+		this.innerChosenColor = donut.getInnerColor();
+		this.borderChosenColor = donut.getBorderColor();
 		setSize(new Dimension(600, 400));
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -163,7 +153,6 @@ public class DonutDialog extends JDialog {
 		xField.setMinimumSize(new Dimension(200, 20));
 		xField.setMaximumSize(new Dimension(200, 20));
 		xField.setPreferredSize(new Dimension(200, 20));
-
 		add(xField, gbc);
 
 		gbc.gridx = 0;
@@ -176,7 +165,6 @@ public class DonutDialog extends JDialog {
 		yField.setMinimumSize(new Dimension(200, 20));
 		yField.setMaximumSize(new Dimension(200, 20));
 		yField.setPreferredSize(new Dimension(200, 20));
-
 		add(yField, gbc);
 
 		gbc.gridx = 0;
@@ -189,7 +177,6 @@ public class DonutDialog extends JDialog {
 		outRadiusField.setMinimumSize(new Dimension(200, 20));
 		outRadiusField.setMaximumSize(new Dimension(200, 20));
 		outRadiusField.setPreferredSize(new Dimension(200, 20));
-
 		add(outRadiusField, gbc);
 
 		gbc.gridx = 0;
@@ -202,7 +189,6 @@ public class DonutDialog extends JDialog {
 		innerRadiusField.setMinimumSize(new Dimension(200, 20));
 		innerRadiusField.setMaximumSize(new Dimension(200, 20));
 		innerRadiusField.setPreferredSize(new Dimension(200, 20));
-
 		add(innerRadiusField, gbc);
 
 		gbc.gridy = 8;
@@ -227,12 +213,8 @@ public class DonutDialog extends JDialog {
 		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
-		setLocationRelativeTo(null);
-		setVisible(true);
-
 		JButton saveButton = new JButton("Save");
 		ActionListener saveAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String xFieldText = xField.getText();
@@ -267,8 +249,6 @@ public class DonutDialog extends JDialog {
 						Point center = new Point(x, y);
 						int innerRadius = Integer.parseInt(innerRadiusFieldText);
 						int outRadius = Integer.parseInt(outRadiusFieldText);
-						Color innerColor = innerChosenColor;
-						Color borderColor = borderChosenColor;
 
 						if (x < 0) {
 							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
@@ -287,21 +267,13 @@ public class DonutDialog extends JDialog {
 						} else if (innerRadius == outRadius) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
-							mainPanel.getAllShapesOnPanel().remove(donut);
-
-							donut.setCenter(center);
-							donut.setRadius(outRadius);
-							donut.setInnerRadius(innerRadius);
-
-							donut.setInnerColor(innerColor);
-							donut.setBorderColor(borderColor);
-							mainPanel.getAllShapesOnPanel().add(donut);
-							donut.draw(mainPanel.getGraphics());
-
-							mainPanel.paint(mainPanel.getGraphics());
+							Donut d = new Donut(center, outRadius, innerRadius);
+							d.setInnerColor(innerChosenColor);
+							d.setBorderColor(borderChosenColor);
+							DonutDialog.this.donut = d;
+							DonutDialog.this.confirmed = true;
 							dispose();
 						}
-
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null,
 								"Invalid input! Cannot convert x, y, inner radius, out radius to integer!");
@@ -316,7 +288,13 @@ public class DonutDialog extends JDialog {
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
-
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public Donut getDonut() {
+		return donut;
+	}
 }

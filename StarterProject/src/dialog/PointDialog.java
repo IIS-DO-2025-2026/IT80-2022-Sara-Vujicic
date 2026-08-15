@@ -6,30 +6,25 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
-import geometry.PnlDrawing;
 import geometry.Point;
 
 public class PointDialog extends JDialog {
-
-	/**
-	 * 
-	 */
-	private Color pointChosenColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
-	public PointDialog(int x, int y, PnlDrawing mainPanel) {
+	private Color pointChosenColor = Color.BLACK;
+	private boolean confirmed = false;
+	private Point point;
 
-		setTitle("Add Point");
+	public PointDialog(java.awt.Frame parent, int x, int y) {
+		super(parent, "Add Point", true);
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -72,20 +67,16 @@ public class PointDialog extends JDialog {
 		pointColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(pointColorChooser, gbc);
 
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Point point = new Point(x, y);
-
-				point.setColor(pointChosenColor);
-
-				mainPanel.getAllShapesOnPanel().add(point);
-
-				mainPanel.paint(mainPanel.getGraphics());
+				Point p = new Point(x, y);
+				p.setColor(pointChosenColor);
+				PointDialog.this.point = p;
+				PointDialog.this.confirmed = true;
 				dispose();
 			}
 		};
@@ -97,16 +88,13 @@ public class PointDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
-
 	}
 
-	public PointDialog(Point point, PnlDrawing mainPanel) {
-
-		setTitle("Modify Point");
+	public PointDialog(java.awt.Frame parent, Point point) {
+		super(parent, "Modify Point", true);
+		this.pointChosenColor = point.getColor();
 		setSize(new Dimension(400, 200));
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -147,11 +135,10 @@ public class PointDialog extends JDialog {
 		pointColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(pointColorChooser, gbc);
 
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 
 		JButton modifyButton = new JButton("Save");
 		ActionListener modifyAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String xFieldText = xField.getText();
@@ -178,16 +165,10 @@ public class PointDialog extends JDialog {
 						} else if (y < 0) {
 							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
 						} else {
-							mainPanel.getAllShapesOnPanel().remove(point);
-
-							point.setX(x);
-							point.setY(y);
-							point.setColor(pointChosenColor);
-							point.draw(mainPanel.getGraphics());
-
-							mainPanel.getAllShapesOnPanel().add(point);
-
-							mainPanel.paint(mainPanel.getGraphics());
+							Point p = new Point(x, y);
+							p.setColor(pointChosenColor);
+							PointDialog.this.point = p;
+							PointDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
@@ -204,9 +185,13 @@ public class PointDialog extends JDialog {
 		modifyButton.setMaximumSize(new Dimension(200, 20));
 		modifyButton.setPreferredSize(new Dimension(200, 20));
 		add(modifyButton, gbc);
-
-		setVisible(true);
-
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public Point getPoint() {
+		return point;
+	}
 }

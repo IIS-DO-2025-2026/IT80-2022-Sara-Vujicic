@@ -6,30 +6,27 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
-import geometry.PnlDrawing;
 import geometry.Point;
 import geometry.Rectangle;
 
 public class RectangleDialog extends JDialog {
-
-	/**
-	 * 
-	 */
-	private Color borderChosenColor = Color.BLACK;
-	private Color innerChosenColor = Color.WHITE;
 	private static final long serialVersionUID = 1L;
 
-	public RectangleDialog(Point point, PnlDrawing mainPanel) {
-		setTitle("Add Rectangle");
+	private Color borderChosenColor = Color.BLACK;
+	private Color innerChosenColor = Color.WHITE;
+	private boolean confirmed = false;
+	private Rectangle rectangle;
+
+	public RectangleDialog(java.awt.Frame parent, Point point) {
+		super(parent, "Add Rectangle", true);
 		setSize(new Dimension(600, 400));
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -43,7 +40,6 @@ public class RectangleDialog extends JDialog {
 		widthField.setMinimumSize(new Dimension(200, 20));
 		widthField.setMaximumSize(new Dimension(200, 20));
 		widthField.setPreferredSize(new Dimension(200, 20));
-
 		add(widthField, gbc);
 
 		gbc.gridx = 0;
@@ -55,7 +51,6 @@ public class RectangleDialog extends JDialog {
 		heightField.setMinimumSize(new Dimension(200, 20));
 		heightField.setMaximumSize(new Dimension(200, 20));
 		heightField.setPreferredSize(new Dimension(200, 20));
-
 		add(heightField, gbc);
 		
 		gbc.gridx = 1;
@@ -70,7 +65,7 @@ public class RectangleDialog extends JDialog {
 		add(borderColorChooser, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy =4;
+		gbc.gridy = 4;
 		JButton innerColorChooser = new JButton("Inner Color");
 		innerColorChooser.addActionListener(e -> {
 			innerChosenColor = JColorChooser.showDialog(null, "Choose inner color", point.getColor());
@@ -80,13 +75,8 @@ public class RectangleDialog extends JDialog {
 		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
-
-		setLocationRelativeTo(null);
-		setVisible(true);
-
 		JButton saveButton = new JButton("Save");
 		ActionListener saveAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String widthFieldText = widthField.getText();
@@ -116,15 +106,13 @@ public class RectangleDialog extends JDialog {
 						} else if (height == 0) {
 							JOptionPane.showMessageDialog(null, "Height cannot be zero!");
 						} else {
-
-							Rectangle rectangle = new Rectangle(point, width, height);
-							rectangle.setBorderColor(borderChosenColor);
-							rectangle.setInnerColor(innerChosenColor);
-							rectangle.draw(mainPanel.getGraphics());
-							mainPanel.getAllShapesOnPanel().add(rectangle);
+							Rectangle r = new Rectangle(point, width, height);
+							r.setBorderColor(borderChosenColor);
+							r.setInnerColor(innerChosenColor);
+							RectangleDialog.this.rectangle = r;
+							RectangleDialog.this.confirmed = true;
 							dispose();
 						}
-
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, "Invalid input!");
 					}
@@ -138,12 +126,14 @@ public class RectangleDialog extends JDialog {
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
-
 	}
 
-	public RectangleDialog(Rectangle rectangle, PnlDrawing mainPanel) {
-		setTitle("Modify Rectangle");
+	public RectangleDialog(java.awt.Frame parent, Rectangle rectangle) {
+		super(parent, "Modify Rectangle", true);
+		this.borderChosenColor = rectangle.getBorderColor();
+		this.innerChosenColor = rectangle.getInnerColor();
 		setSize(new Dimension(600, 400));
+		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
@@ -161,7 +151,6 @@ public class RectangleDialog extends JDialog {
 		xField.setMinimumSize(new Dimension(200, 20));
 		xField.setMaximumSize(new Dimension(200, 20));
 		xField.setPreferredSize(new Dimension(200, 20));
-
 		add(xField, gbc);
 
 		gbc.gridx = 0;
@@ -174,7 +163,6 @@ public class RectangleDialog extends JDialog {
 		yField.setMinimumSize(new Dimension(200, 20));
 		yField.setMaximumSize(new Dimension(200, 20));
 		yField.setPreferredSize(new Dimension(200, 20));
-
 		add(yField, gbc);
 
 		gbc.gridx = 0;
@@ -223,12 +211,8 @@ public class RectangleDialog extends JDialog {
 		innerColorChooser.setPreferredSize(new Dimension(200, 20));
 		add(innerColorChooser, gbc);
 
-		setLocationRelativeTo(null);
-		setVisible(true);
-
 		JButton saveButton = new JButton("Save");
 		ActionListener saveAction = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String widthFieldText = widthField.getText();
@@ -277,18 +261,11 @@ public class RectangleDialog extends JDialog {
 						} else if (height == 0) {
 							JOptionPane.showMessageDialog(null, "Height cannot be zero!");
 						} else {
-							mainPanel.getAllShapesOnPanel().remove(rectangle);
-
-							rectangle.setUpperLeftPoint(point);
-							rectangle.setWidth(width);
-							rectangle.setHeight(height);
-							rectangle.setBorderColor(borderChosenColor);
-							rectangle.setInnerColor(innerChosenColor);
-
-							mainPanel.getAllShapesOnPanel().add(rectangle);
-							rectangle.draw(mainPanel.getGraphics());
-
-							mainPanel.paint(mainPanel.getGraphics());
+							Rectangle r = new Rectangle(point, width, height);
+							r.setBorderColor(borderChosenColor);
+							r.setInnerColor(innerChosenColor);
+							RectangleDialog.this.rectangle = r;
+							RectangleDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
@@ -304,7 +281,13 @@ public class RectangleDialog extends JDialog {
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
 		add(saveButton, gbc);
-
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public Rectangle getRectangle() {
+		return rectangle;
+	}
 }
