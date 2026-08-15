@@ -23,8 +23,8 @@ public class RectangleDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color borderChoosedColor = Color.BLACK;
-	private Color innerChoosedColor = Color.WHITE;
+	private Color borderChosenColor = Color.BLACK;
+	private Color innerChosenColor = Color.WHITE;
 	private static final long serialVersionUID = 1L;
 
 	public RectangleDialog(Point point, PnlDrawing mainPanel) {
@@ -62,7 +62,7 @@ public class RectangleDialog extends JDialog {
 		gbc.gridy = 3;
 		JButton borderColorChooser = new JButton("Border Color");
 		borderColorChooser.addActionListener(e -> {
-			borderChoosedColor = JColorChooser.showDialog(null, "Choose border color", point.getColor());
+			borderChosenColor = JColorChooser.showDialog(null, "Choose border color", point.getColor());
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -73,7 +73,7 @@ public class RectangleDialog extends JDialog {
 		gbc.gridy =4;
 		JButton innerColorChooser = new JButton("Inner Color");
 		innerColorChooser.addActionListener(e -> {
-			innerChoosedColor = JColorChooser.showDialog(null, "Choose inner color", point.getColor());
+			innerChosenColor = JColorChooser.showDialog(null, "Choose inner color", point.getColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -118,8 +118,8 @@ public class RectangleDialog extends JDialog {
 						} else {
 
 							Rectangle rectangle = new Rectangle(point, width, height);
-							rectangle.setBorderColor(borderChoosedColor);
-							rectangle.setInnerColor(innerChoosedColor);
+							rectangle.setBorderColor(borderChosenColor);
+							rectangle.setInnerColor(innerChosenColor);
 							rectangle.draw(mainPanel.getGraphics());
 							mainPanel.getAllShapesOnPanel().add(rectangle);
 							dispose();
@@ -205,7 +205,7 @@ public class RectangleDialog extends JDialog {
 		gbc.gridy = 9;
 		JButton borderColorChooser = new JButton("Border Color");
 		borderColorChooser.addActionListener(e -> {
-			borderChoosedColor = JColorChooser.showDialog(null, "Choose border color", rectangle.getBorderColor());
+			borderChosenColor = JColorChooser.showDialog(null, "Choose border color", rectangle.getBorderColor());
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -216,7 +216,7 @@ public class RectangleDialog extends JDialog {
 		gbc.gridy = 11;
 		JButton innerColorChooser = new JButton("Inner Color");
 		innerColorChooser.addActionListener(e -> {
-			innerChoosedColor = JColorChooser.showDialog(null, "Choose inner color", rectangle.getInnerColor());
+			innerChosenColor = JColorChooser.showDialog(null, "Choose inner color", rectangle.getInnerColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -282,8 +282,8 @@ public class RectangleDialog extends JDialog {
 							rectangle.setUpperLeftPoint(point);
 							rectangle.setWidth(width);
 							rectangle.setHeight(height);
-							rectangle.setBorderColor(borderChoosedColor);
-							rectangle.setInnerColor(innerChoosedColor);
+							rectangle.setBorderColor(borderChosenColor);
+							rectangle.setInnerColor(innerChosenColor);
 
 							mainPanel.getAllShapesOnPanel().add(rectangle);
 							rectangle.draw(mainPanel.getGraphics());

@@ -23,7 +23,7 @@ public class LineDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color lineChoosedColor = Color.BLACK;
+	private Color lineChosenColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
 	public LineDialog(Point startPoint, Point endPoint, PnlDrawing mainPanel) {
@@ -39,7 +39,7 @@ public class LineDialog extends JDialog {
 
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
-			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			lineChosenColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
 		lineColorChooser.setMinimumSize(new Dimension(200, 20));
 		lineColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -57,7 +57,7 @@ public class LineDialog extends JDialog {
 				Line line = new Line();
 				line.setStartPoint(startPoint);
 				line.setEndPoint(endPoint);
-				line.setColor(lineChoosedColor);
+				line.setColor(lineChosenColor);
 				
 				mainPanel.getAllShapesOnPanel().add(line);
 				line.draw(mainPanel.getGraphics());
@@ -143,7 +143,7 @@ public class LineDialog extends JDialog {
 		gbc.gridy = 8;
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
-			lineChoosedColor = JColorChooser.showDialog(null, "Choose color", line.getColor());
+			lineChosenColor = JColorChooser.showDialog(null, "Choose color", line.getColor());
 		});
 		lineColorChooser.setMinimumSize(new Dimension(200, 20));
 		lineColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -213,7 +213,7 @@ public class LineDialog extends JDialog {
 
 							line.setStartPoint(startPoint);
 							line.setEndPoint(endPoint);
-							line.setColor(lineChoosedColor);
+							line.setColor(lineChosenColor);
 
 							mainPanel.getAllShapesOnPanel().add(line);
 							line.draw(mainPanel.getGraphics());

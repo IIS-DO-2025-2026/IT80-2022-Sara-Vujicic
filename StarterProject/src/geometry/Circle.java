@@ -34,14 +34,14 @@ public class Circle extends Shape {
 
 	}
 
-	// Obim kruga
+	// Circumference of the circle
 	public double circumference(int radius) {
 		return 2 * radius * Math.PI;
 	}
 
 	@Override
 	public String toString() {
-		return "Centar:" + center + "," + "radius:" + radius;
+		return "Center:" + center + "," + "radius:" + radius;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class Circle extends Shape {
 
 	public void setRadius(int radius) throws Exception {
 		if (radius < 0)
-			throw new Exception("Radius mora biti broj veci od 0!");
+			throw new Exception("Radius must be a number greater than 0!");
 		this.radius = radius;
 	}
 
@@ -95,7 +95,7 @@ public class Circle extends Shape {
 		return this.borderColor;
 	}
 
-	// Povrsina kruga
+	// Area of the circle
 	public double area(int radius) {
 
 		return radius * radius * Math.PI;

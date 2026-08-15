@@ -24,8 +24,8 @@ public class DonutDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Color innerChosedColor = Color.WHITE;
-	private Color borderChosedColor = Color.BLACK;
+	private Color innerChosenColor = Color.WHITE;
+	private Color borderChosenColor = Color.BLACK;
 
 	public DonutDialog(Point point, PnlDrawing mainPanel) {
 		setTitle("Add Donut");
@@ -62,7 +62,7 @@ public class DonutDialog extends JDialog {
 		gbc.gridx = 1;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
+			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -73,7 +73,7 @@ public class DonutDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
+			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -120,8 +120,8 @@ public class DonutDialog extends JDialog {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
 							Donut donut = new Donut(point, outRadius, innerRadius);
-							donut.setInnerColor(innerChosedColor);
-							donut.setBorderColor(borderChosedColor);
+							donut.setInnerColor(innerChosenColor);
+							donut.setBorderColor(borderChosenColor);
 							donut.draw(mainPanel.getGraphics());
 
 							mainPanel.getAllShapesOnPanel().add(donut);
@@ -209,7 +209,7 @@ public class DonutDialog extends JDialog {
 		gbc.gridx = 1;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosedColor = JColorChooser.showDialog(null, "Choose your border color", donut.getBorderColor());
+			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", donut.getBorderColor());
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -220,7 +220,7 @@ public class DonutDialog extends JDialog {
 		gbc.gridy = 10;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosedColor = JColorChooser.showDialog(null, "Choose your inner color", donut.getInnerColor());
+			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", donut.getInnerColor());
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -267,8 +267,8 @@ public class DonutDialog extends JDialog {
 						Point center = new Point(x, y);
 						int innerRadius = Integer.parseInt(innerRadiusFieldText);
 						int outRadius = Integer.parseInt(outRadiusFieldText);
-						Color innerColor = innerChosedColor;
-						Color borderColor = borderChosedColor;
+						Color innerColor = innerChosenColor;
+						Color borderColor = borderChosenColor;
 
 						if (x < 0) {
 							JOptionPane.showMessageDialog(null, "X cannot be negative number!");

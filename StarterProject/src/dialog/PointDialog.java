@@ -22,7 +22,7 @@ public class PointDialog extends JDialog {
 	/**
 	 * 
 	 */
-	private Color pointChoosedColor = Color.BLACK;
+	private Color pointChosenColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 
 	public PointDialog(int x, int y, PnlDrawing mainPanel) {
@@ -65,7 +65,7 @@ public class PointDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
-			pointChoosedColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			pointChosenColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
 		});
 		pointColorChooser.setMinimumSize(new Dimension(200, 20));
 		pointColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -81,7 +81,7 @@ public class PointDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				Point point = new Point(x, y);
 
-				point.setColor(pointChoosedColor);
+				point.setColor(pointChosenColor);
 
 				mainPanel.getAllShapesOnPanel().add(point);
 
@@ -140,7 +140,7 @@ public class PointDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
-			pointChoosedColor = JColorChooser.showDialog(null, "Choose color", point.getColor());
+			pointChosenColor = JColorChooser.showDialog(null, "Choose color", point.getColor());
 		});
 		pointColorChooser.setMinimumSize(new Dimension(200, 20));
 		pointColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -182,7 +182,7 @@ public class PointDialog extends JDialog {
 
 							point.setX(x);
 							point.setY(y);
-							point.setColor(pointChoosedColor);
+							point.setColor(pointChosenColor);
 							point.draw(mainPanel.getGraphics());
 
 							mainPanel.getAllShapesOnPanel().add(point);
