@@ -16,6 +16,8 @@ import dialog.DonutDialog;
 import dialog.LineDialog;
 import dialog.PointDialog;
 import dialog.RectangleDialog;
+import dialog.HexagonDialog;
+import geometry.HexagonAdapter;
 
 public class DrawingController {
 	private final DrawingModel model;
@@ -71,6 +73,7 @@ public class DrawingController {
 		frame.getTglBtnRectangle().addActionListener(toolSwitchListener);
 		frame.getTglBtnCircle().addActionListener(toolSwitchListener);
 		frame.getTglBtnDonut().addActionListener(toolSwitchListener);
+		frame.getTglBtnHexagon().addActionListener(toolSwitchListener);
 		frame.getTglBtnSelect().addActionListener(toolSwitchListener);
 	}
 
@@ -124,6 +127,14 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				model.add(dialog.getDonut());
+				view.repaint();
+			}
+		} else if (frame.getTglBtnHexagon().isSelected()) {
+			Point point = new Point(x, y);
+			HexagonDialog dialog = new HexagonDialog(frame, point);
+			dialog.setVisible(true);
+			if (dialog.isConfirmed()) {
+				model.add(dialog.getHexagon());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnSelect().isSelected()) {
@@ -201,6 +212,20 @@ public class DrawingController {
 						c.setRadius(dialog.getCircle().getRadius());
 						c.setInnerColor(dialog.getCircle().getInnerColor());
 						c.setBorderColor(dialog.getCircle().getBorderColor());
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			} else if (selected instanceof HexagonAdapter) {
+				HexagonAdapter h = (HexagonAdapter) selected;
+				HexagonDialog dialog = new HexagonDialog(frame, h);
+				dialog.setVisible(true);
+				if (dialog.isConfirmed()) {
+					try {
+						h.setCenter(dialog.getHexagon().getCenter());
+						h.setRadius(dialog.getHexagon().getRadius());
+						h.setInnerColor(dialog.getHexagon().getInnerColor());
+						h.setEdgeColor(dialog.getHexagon().getEdgeColor());
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 					}

@@ -23,6 +23,7 @@ public class DrawingFrame extends JFrame {
 	private final JToggleButton tglBtnRectangle;
 	private final JToggleButton tglBtnCircle;
 	private final JToggleButton tglBtnDonut;
+	private final JToggleButton tglBtnHexagon;
 	private final JToggleButton tglBtnSelect;
 	private final JButton btnModify;
 	private final JButton btnDelete;
@@ -51,6 +52,7 @@ public class DrawingFrame extends JFrame {
 		tglBtnRectangle = new JToggleButton("Rectangle");
 		tglBtnCircle = new JToggleButton("Circle");
 		tglBtnDonut = new JToggleButton("Donut");
+		tglBtnHexagon = new JToggleButton("Hexagon");
 		tglBtnSelect = new JToggleButton("Select");
 		btnModify = new JButton("Modify");
 		btnDelete = new JButton("Delete");
@@ -60,6 +62,7 @@ public class DrawingFrame extends JFrame {
 		pnlControls.add(tglBtnRectangle);
 		pnlControls.add(tglBtnCircle);
 		pnlControls.add(tglBtnDonut);
+		pnlControls.add(tglBtnHexagon);
 		pnlControls.add(btnDelete);
 		pnlControls.add(btnModify);
 		pnlControls.add(tglBtnSelect);
@@ -71,6 +74,7 @@ public class DrawingFrame extends JFrame {
 		btnGroup.add(tglBtnRectangle);
 		btnGroup.add(tglBtnCircle);
 		btnGroup.add(tglBtnDonut);
+		btnGroup.add(tglBtnHexagon);
 		btnGroup.add(tglBtnSelect);
 
 		// Add components to layout
@@ -109,6 +113,10 @@ public class DrawingFrame extends JFrame {
 
 	public JToggleButton getTglBtnDonut() {
 		return tglBtnDonut;
+	}
+
+	public JToggleButton getTglBtnHexagon() {
+		return tglBtnHexagon;
 	}
 
 	public JToggleButton getTglBtnSelect() {
