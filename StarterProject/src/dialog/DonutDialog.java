@@ -25,16 +25,42 @@ public class DonutDialog extends JDialog {
 
 	public DonutDialog(java.awt.Frame parent, Point point) {
 		super(parent, "Add Donut", true);
-		setSize(new Dimension(600, 400));
+		setSize(new Dimension(600, 450));
 		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
 
+		// Center coordinate inputs
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		add(new JLabel("Inner radius: "), gbc);
+		add(new JLabel("Center Point: "), gbc);
 
+		gbc.gridy = 1;
+		add(new JLabel("X: "), gbc);
+		gbc.gridx = 1;
+		JTextField xField = new JTextField();
+		xField.setText(String.valueOf(point.getX()));
+		xField.setMinimumSize(new Dimension(200, 20));
+		xField.setMaximumSize(new Dimension(200, 20));
+		xField.setPreferredSize(new Dimension(200, 20));
+		add(xField, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		add(new JLabel("Y: "), gbc);
+		gbc.gridx = 1;
+		JTextField yField = new JTextField();
+		yField.setText(String.valueOf(point.getY()));
+		yField.setMinimumSize(new Dimension(200, 20));
+		yField.setMaximumSize(new Dimension(200, 20));
+		yField.setPreferredSize(new Dimension(200, 20));
+		add(yField, gbc);
+
+		// Radius inputs
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		add(new JLabel("Inner radius: "), gbc);
 		gbc.gridx = 1;
 		JTextField innerRadiusField = new JTextField();
 		innerRadiusField.setMinimumSize(new Dimension(200, 20));
@@ -43,9 +69,8 @@ public class DonutDialog extends JDialog {
 		add(innerRadiusField, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 4;
 		add(new JLabel("Out Radius: "), gbc);
-
 		gbc.gridx = 1;
 		JTextField outRadiusField = new JTextField();
 		outRadiusField.setMinimumSize(new Dimension(200, 20));
@@ -53,11 +78,14 @@ public class DonutDialog extends JDialog {
 		outRadiusField.setPreferredSize(new Dimension(200, 20));
 		add(outRadiusField, gbc);
 		
-		gbc.gridy = 3;
+		gbc.gridy = 5;
 		gbc.gridx = 1;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
+			Color c = JColorChooser.showDialog(null, "Choose your border color", borderChosenColor);
+			if (c != null) {
+				borderChosenColor = c;
+			}
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -65,10 +93,13 @@ public class DonutDialog extends JDialog {
 		add(borderColorChooser, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 4;
+		gbc.gridy = 6;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
+			Color c = JColorChooser.showDialog(null, "Choose your inner color", innerChosenColor);
+			if (c != null) {
+				innerChosenColor = c;
+			}
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -79,24 +110,26 @@ public class DonutDialog extends JDialog {
 		ActionListener saveAction = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				String xFieldText = xField.getText();
+				String yFieldText = yField.getText();
 				String innerRadiusFieldText = innerRadiusField.getText();
 				String outRadiusFieldText = outRadiusField.getText();
 				boolean hasError = false;
-				if (innerRadiusFieldText.isBlank() && outRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Inner and out radius cannot be blank!");
-					hasError = true;
-				} else if (innerRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Inner radius cannot be blank!");
-					hasError = true;
-				} else if (outRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Out radius cannot be blank!");
+				if (xFieldText.isBlank() || yFieldText.isBlank() || innerRadiusFieldText.isBlank() || outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "All fields (X, Y, Inner radius, Out radius) must be filled!");
 					hasError = true;
 				}
 				if (!hasError) {
 					try {
+						int x = Integer.parseInt(xFieldText);
+						int y = Integer.parseInt(yFieldText);
 						int innerRadius = Integer.parseInt(innerRadiusFieldText);
 						int outRadius = Integer.parseInt(outRadiusFieldText);
-						if (innerRadius < 0) {
+						if (x < 0) {
+							JOptionPane.showMessageDialog(null, "X cannot be negative number!");
+						} else if (y < 0) {
+							JOptionPane.showMessageDialog(null, "Y cannot be negative number!");
+						} else if (innerRadius < 0) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be negative number!");
 						} else if (innerRadius == 0) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be zero!");
@@ -109,22 +142,23 @@ public class DonutDialog extends JDialog {
 						} else if (innerRadius == outRadius) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
-							Donut d = new Donut(point, outRadius, innerRadius);
+							Point center = new Point(x, y);
+							Donut d = new Donut(center, outRadius, innerRadius);
 							d.setInnerColor(innerChosenColor);
-							d.setBorderColor(borderChosenColor);
+							d.setEdgeColor(borderChosenColor);
 							DonutDialog.this.donut = d;
 							DonutDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(null, "Invalid input!");
+						JOptionPane.showMessageDialog(null, "Invalid input! Fields must be valid integers.");
 					}
 				}
 			}
 		};
 		saveButton.addActionListener(saveAction);
 		gbc.gridx = 1;
-		gbc.gridy = 5;
+		gbc.gridy = 7;
 		saveButton.setMinimumSize(new Dimension(200, 20));
 		saveButton.setMaximumSize(new Dimension(200, 20));
 		saveButton.setPreferredSize(new Dimension(200, 20));
@@ -134,8 +168,8 @@ public class DonutDialog extends JDialog {
 	public DonutDialog(java.awt.Frame parent, Donut donut) {
 		super(parent, "Modify Donut", true);
 		this.innerChosenColor = donut.getInnerColor();
-		this.borderChosenColor = donut.getBorderColor();
-		setSize(new Dimension(600, 400));
+		this.borderChosenColor = donut.getEdgeColor();
+		setSize(new Dimension(600, 450));
 		setLocationRelativeTo(parent);
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -195,7 +229,10 @@ public class DonutDialog extends JDialog {
 		gbc.gridx = 1;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", donut.getBorderColor());
+			Color c = JColorChooser.showDialog(null, "Choose your border color", borderChosenColor);
+			if (c != null) {
+				borderChosenColor = c;
+			}
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -206,7 +243,10 @@ public class DonutDialog extends JDialog {
 		gbc.gridy = 10;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", donut.getInnerColor());
+			Color c = JColorChooser.showDialog(null, "Choose your inner color", innerChosenColor);
+			if (c != null) {
+				innerChosenColor = c;
+			}
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -222,31 +262,14 @@ public class DonutDialog extends JDialog {
 				String innerRadiusFieldText = innerRadiusField.getText();
 				String outRadiusFieldText = outRadiusField.getText();
 				boolean hasError = false;
-				if (xFieldText.isBlank() && yFieldText.isBlank() && innerRadiusFieldText.isBlank()
-						&& outRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Inner and out radius and x,y cannot be blank!");
-					hasError = true;
-				} else if (innerRadiusFieldText.isBlank() && outRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Inner and out radius cannot be blank!");
-					hasError = true;
-				} else if (innerRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Inner radius cannot be blank!");
-					hasError = true;
-				} else if (outRadiusFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Out radius cannot be blank!");
-					hasError = true;
-				} else if (xFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "X field cannot be blank!");
-					hasError = true;
-				} else if (yFieldText.isBlank()) {
-					JOptionPane.showMessageDialog(null, "Y field cannot be blank!");
+				if (xFieldText.isBlank() || yFieldText.isBlank() || innerRadiusFieldText.isBlank() || outRadiusFieldText.isBlank()) {
+					JOptionPane.showMessageDialog(null, "All fields (X, Y, Inner radius, Out radius) must be filled!");
 					hasError = true;
 				}
 				if (!hasError) {
 					try {
 						int x = Integer.parseInt(xFieldText);
 						int y = Integer.parseInt(yFieldText);
-						Point center = new Point(x, y);
 						int innerRadius = Integer.parseInt(innerRadiusFieldText);
 						int outRadius = Integer.parseInt(outRadiusFieldText);
 
@@ -267,16 +290,16 @@ public class DonutDialog extends JDialog {
 						} else if (innerRadius == outRadius) {
 							JOptionPane.showMessageDialog(null, "Inner radius cannot be same as outer!");
 						} else {
+							Point center = new Point(x, y);
 							Donut d = new Donut(center, outRadius, innerRadius);
 							d.setInnerColor(innerChosenColor);
-							d.setBorderColor(borderChosenColor);
+							d.setEdgeColor(borderChosenColor);
 							DonutDialog.this.donut = d;
 							DonutDialog.this.confirmed = true;
 							dispose();
 						}
 					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(null,
-								"Invalid input! Cannot convert x, y, inner radius, out radius to integer!");
+						JOptionPane.showMessageDialog(null, "Invalid input! Fields must be valid integers.");
 					}
 				}
 			}

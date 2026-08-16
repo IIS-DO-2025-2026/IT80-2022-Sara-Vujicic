@@ -95,6 +95,14 @@ public class Circle extends Shape {
 		return this.borderColor;
 	}
 
+	public Color getEdgeColor() {
+		return this.borderColor;
+	}
+
+	public void setEdgeColor(Color edgeColor) {
+		this.borderColor = edgeColor;
+	}
+
 	// Area of the circle
 	public double area(int radius) {
 

@@ -2,6 +2,10 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 
 public class Donut extends Circle {
 	private int innerRadius;
@@ -24,14 +28,25 @@ public class Donut extends Circle {
 
 	@Override
 	public boolean contains(int x, int y) {
-		double dFromCenter = this.getCenter().distance(x, y);
-		return dFromCenter > this.innerRadius && dFromCenter < getRadius();
+		int centerX = this.getCenter().getX();
+		int centerY = this.getCenter().getY();
+		int outerRadius = this.getRadius();
+
+		Ellipse2D outerEllipse = new Ellipse2D.Double(
+				centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
+		Ellipse2D innerEllipse = new Ellipse2D.Double(
+				centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+
+		Area outerArea = new Area(outerEllipse);
+		Area innerArea = new Area(innerEllipse);
+		outerArea.subtract(innerArea);
+
+		return outerArea.contains(x, y);
 	}
 
 	@Override
 	public boolean contains(Point point) {
-		double dFromCenter = this.getCenter().distance(point.getX(), point.getY());
-		return super.contains(point.getX(), point.getY()) && dFromCenter > this.innerRadius;
+		return this.contains(point.getX(), point.getY());
 	}
 
 	@Override
@@ -61,21 +76,54 @@ public class Donut extends Circle {
 
 	@Override
 	public void draw(Graphics g) {
-		int centerX = super.getCenter().getX();
-		int centerY = super.getCenter().getY();
-		int outerRadius = super.getRadius();
-		super.draw(g);
-		
-		g.setColor(this.innerColor);
-		g.fillOval(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
-		g.setColor(this.borderColor);
-		g.drawOval(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
-		
-		g.setColor(Color.WHITE);
-		g.fillOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
-		g.setColor(this.borderColor);
-		g.drawOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		Graphics2D g2d = (Graphics2D) g;
 
+		int centerX = this.getCenter().getX();
+		int centerY = this.getCenter().getY();
+		int outerRadius = this.getRadius();
+
+		Ellipse2D outerEllipse = new Ellipse2D.Double(
+				centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2);
+		Ellipse2D innerEllipse = new Ellipse2D.Double(
+				centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+
+		Area outerArea = new Area(outerEllipse);
+		Area innerArea = new Area(innerEllipse);
+		outerArea.subtract(innerArea);
+
+		g2d.setColor(this.getInnerColor());
+		g2d.fill(outerArea);
+
+		g2d.setColor(this.getEdgeColor());
+		g2d.draw(outerEllipse);
+		g2d.draw(innerEllipse);
+
+		if (this.isSelected()) {
+			drawSelectionSquares(g2d, centerX, centerY, outerRadius, innerRadius);
+		}
+	}
+
+	private void drawSelectionSquares(Graphics2D g2d, int centerX, int centerY, int outerRadius, int innerRadius) {
+		g2d.setColor(Color.BLUE);
+
+		// Outer circle selection squares
+		drawSingleSelectionSquare(g2d, centerX - outerRadius, centerY);
+		drawSingleSelectionSquare(g2d, centerX + outerRadius, centerY);
+		drawSingleSelectionSquare(g2d, centerX, centerY - outerRadius);
+		drawSingleSelectionSquare(g2d, centerX, centerY + outerRadius);
+
+		// Inner circle selection squares
+		drawSingleSelectionSquare(g2d, centerX - innerRadius, centerY);
+		drawSingleSelectionSquare(g2d, centerX + innerRadius, centerY);
+		drawSingleSelectionSquare(g2d, centerX, centerY - innerRadius);
+		drawSingleSelectionSquare(g2d, centerX, centerY + innerRadius);
+
+		// Center selection square
+		drawSingleSelectionSquare(g2d, centerX, centerY);
+	}
+
+	private void drawSingleSelectionSquare(Graphics2D g2d, int x, int y) {
+		g2d.fillRect(x - 3, y - 3, 6, 6);
 	}
 
 	public int compareTo(Object obj) {
@@ -109,6 +157,16 @@ public class Donut extends Circle {
 
 	public Color getBorderColor() {
 		return this.borderColor;
+	}
+
+	@Override
+	public Color getEdgeColor() {
+		return this.borderColor;
+	}
+
+	@Override
+	public void setEdgeColor(Color edgeColor) {
+		this.borderColor = edgeColor;
 	}
 
 }
