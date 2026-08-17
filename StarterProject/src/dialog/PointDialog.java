@@ -23,6 +23,9 @@ public class PointDialog extends JDialog {
 
 	public PointDialog(java.awt.Frame parent, int x, int y) {
 		super(parent, "Add Point", true);
+		if (parent instanceof mvc.DrawingFrame) {
+			this.pointChosenColor = ((mvc.DrawingFrame) parent).getActiveEdgeColor();
+		}
 		setSize(new Dimension(400, 200));
 		setLocationRelativeTo(parent);
 
@@ -60,7 +63,10 @@ public class PointDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
-			pointChosenColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			Color newColor = JColorChooser.showDialog(null, "Choose color", pointChosenColor);
+			if (newColor != null) {
+				pointChosenColor = newColor;
+			}
 		});
 		pointColorChooser.setMinimumSize(new Dimension(200, 20));
 		pointColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -128,7 +134,10 @@ public class PointDialog extends JDialog {
 		gbc.gridy = 4;
 		JButton pointColorChooser = new JButton("Color");
 		pointColorChooser.addActionListener(e -> {
-			pointChosenColor = JColorChooser.showDialog(null, "Choose color", point.getColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose color", pointChosenColor);
+			if (newColor != null) {
+				pointChosenColor = newColor;
+			}
 		});
 		pointColorChooser.setMinimumSize(new Dimension(200, 20));
 		pointColorChooser.setMaximumSize(new Dimension(200, 20));

@@ -25,6 +25,10 @@ public class DonutDialog extends JDialog {
 
 	public DonutDialog(java.awt.Frame parent, Point point) {
 		super(parent, "Add Donut", true);
+		if (parent instanceof mvc.DrawingFrame) {
+			this.borderChosenColor = ((mvc.DrawingFrame) parent).getActiveEdgeColor();
+			this.innerChosenColor = ((mvc.DrawingFrame) parent).getActiveInnerColor();
+		}
 		setSize(new Dimension(600, 450));
 		setLocationRelativeTo(parent);
 

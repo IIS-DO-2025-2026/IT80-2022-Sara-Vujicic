@@ -25,6 +25,10 @@ public class CircleDialog extends JDialog {
 
 	public CircleDialog(java.awt.Frame parent, Point point) {
 		super(parent, "Add Circle", true);
+		if (parent instanceof mvc.DrawingFrame) {
+			this.borderChosenColor = ((mvc.DrawingFrame) parent).getActiveEdgeColor();
+			this.innerChosenColor = ((mvc.DrawingFrame) parent).getActiveInnerColor();
+		}
 		setSize(new Dimension(400, 200));
 		setLocationRelativeTo(parent);
 
@@ -46,7 +50,10 @@ public class CircleDialog extends JDialog {
 		gbc.gridy = 2;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", point.getColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose your inner color", innerChosenColor);
+			if (newColor != null) {
+				innerChosenColor = newColor;
+			}
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -57,7 +64,10 @@ public class CircleDialog extends JDialog {
 		gbc.gridy = 3;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", point.getColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose your border color", borderChosenColor);
+			if (newColor != null) {
+				borderChosenColor = newColor;
+			}
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -156,7 +166,10 @@ public class CircleDialog extends JDialog {
 		gbc.gridy = 6;
 		JButton innerColorChooser = new JButton("Inner color");
 		innerColorChooser.addActionListener(e -> {
-			innerChosenColor = JColorChooser.showDialog(null, "Choose your inner color", circle.getInnerColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose your inner color", innerChosenColor);
+			if (newColor != null) {
+				innerChosenColor = newColor;
+			}
 		});
 		innerColorChooser.setMinimumSize(new Dimension(200, 20));
 		innerColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -167,7 +180,10 @@ public class CircleDialog extends JDialog {
 		gbc.gridy = 8;
 		JButton borderColorChooser = new JButton("Border color");
 		borderColorChooser.addActionListener(e -> {
-			borderChosenColor = JColorChooser.showDialog(null, "Choose your border color", circle.getBorderColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose your border color", borderChosenColor);
+			if (newColor != null) {
+				borderChosenColor = newColor;
+			}
 		});
 		borderColorChooser.setMinimumSize(new Dimension(200, 20));
 		borderColorChooser.setMaximumSize(new Dimension(200, 20));

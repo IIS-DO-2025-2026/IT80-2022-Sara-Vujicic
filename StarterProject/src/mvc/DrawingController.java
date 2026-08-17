@@ -1,9 +1,11 @@
 package mvc;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import geometry.Circle;
 import geometry.Donut;
@@ -57,6 +59,26 @@ public class DrawingController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				handleDelete();
+			}
+		});
+
+		frame.getBtnActiveEdgeColor().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(frame, "Choose Edge Color", frame.getActiveEdgeColor());
+				if (newColor != null) {
+					frame.setActiveEdgeColor(newColor);
+				}
+			}
+		});
+
+		frame.getBtnActiveInnerColor().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(frame, "Choose Inner Color", frame.getActiveInnerColor());
+				if (newColor != null) {
+					frame.setActiveInnerColor(newColor);
+				}
 			}
 		});
 

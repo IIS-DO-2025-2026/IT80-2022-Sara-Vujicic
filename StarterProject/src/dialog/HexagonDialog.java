@@ -26,6 +26,10 @@ public class HexagonDialog extends JDialog {
 
     public HexagonDialog(Frame parent, Point point) {
         super(parent, "Add Hexagon", true);
+        if (parent instanceof mvc.DrawingFrame) {
+            this.borderChosenColor = ((mvc.DrawingFrame) parent).getActiveEdgeColor();
+            this.innerChosenColor = ((mvc.DrawingFrame) parent).getActiveInnerColor();
+        }
         setSize(new Dimension(400, 200));
         setLocationRelativeTo(parent);
 

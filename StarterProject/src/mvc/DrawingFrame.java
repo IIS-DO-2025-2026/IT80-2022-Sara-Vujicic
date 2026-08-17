@@ -28,6 +28,11 @@ public class DrawingFrame extends JFrame {
 	private final JButton btnModify;
 	private final JButton btnDelete;
 
+	private Color activeEdgeColor = Color.BLACK;
+	private Color activeInnerColor = Color.WHITE;
+	private final JButton btnActiveEdgeColor;
+	private final JButton btnActiveInnerColor;
+
 	public DrawingFrame() {
 		setTitle("Vujicic Sara IT80/2022");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -66,6 +71,19 @@ public class DrawingFrame extends JFrame {
 		pnlControls.add(btnDelete);
 		pnlControls.add(btnModify);
 		pnlControls.add(tglBtnSelect);
+
+		btnActiveEdgeColor = new JButton("Edge Color");
+		btnActiveEdgeColor.setOpaque(true);
+		btnActiveEdgeColor.setContentAreaFilled(true);
+		btnActiveInnerColor = new JButton("Inner Color");
+		btnActiveInnerColor.setOpaque(true);
+		btnActiveInnerColor.setContentAreaFilled(true);
+
+		updateColorButton(btnActiveEdgeColor, activeEdgeColor);
+		updateColorButton(btnActiveInnerColor, activeInnerColor);
+
+		pnlControls.add(btnActiveEdgeColor);
+		pnlControls.add(btnActiveInnerColor);
 
 		// Group the toggle buttons so only one tool is active at a time
 		ButtonGroup btnGroup = new ButtonGroup();
@@ -129,5 +147,37 @@ public class DrawingFrame extends JFrame {
 
 	public JButton getBtnDelete() {
 		return btnDelete;
+	}
+
+	public JButton getBtnActiveEdgeColor() {
+		return btnActiveEdgeColor;
+	}
+
+	public JButton getBtnActiveInnerColor() {
+		return btnActiveInnerColor;
+	}
+
+	public Color getActiveEdgeColor() {
+		return activeEdgeColor;
+	}
+
+	public void setActiveEdgeColor(Color color) {
+		this.activeEdgeColor = color;
+		updateColorButton(btnActiveEdgeColor, color);
+	}
+
+	public Color getActiveInnerColor() {
+		return activeInnerColor;
+	}
+
+	public void setActiveInnerColor(Color color) {
+		this.activeInnerColor = color;
+		updateColorButton(btnActiveInnerColor, color);
+	}
+
+	private void updateColorButton(JButton button, Color color) {
+		button.setBackground(color);
+		double luma = 0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue();
+		button.setForeground(luma < 128 ? Color.WHITE : Color.BLACK);
 	}
 }

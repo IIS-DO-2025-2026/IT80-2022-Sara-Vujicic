@@ -24,6 +24,9 @@ public class LineDialog extends JDialog {
 
 	public LineDialog(java.awt.Frame parent, Point startPoint, Point endPoint) {
 		super(parent, "Add Line", true);
+		if (parent instanceof mvc.DrawingFrame) {
+			this.lineChosenColor = ((mvc.DrawingFrame) parent).getActiveEdgeColor();
+		}
 		setSize(new Dimension(400, 200));
 		setLocationRelativeTo(parent);
 
@@ -35,7 +38,10 @@ public class LineDialog extends JDialog {
 
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
-			lineChosenColor = JColorChooser.showDialog(null, "Choose color", Color.BLACK);
+			Color newColor = JColorChooser.showDialog(null, "Choose color", lineChosenColor);
+			if (newColor != null) {
+				lineChosenColor = newColor;
+			}
 		});
 		lineColorChooser.setMinimumSize(new Dimension(200, 20));
 		lineColorChooser.setMaximumSize(new Dimension(200, 20));
@@ -133,7 +139,10 @@ public class LineDialog extends JDialog {
 		gbc.gridy = 8;
 		JButton lineColorChooser = new JButton("Color");
 		lineColorChooser.addActionListener(e -> {
-			lineChosenColor = JColorChooser.showDialog(null, "Choose color", line.getColor());
+			Color newColor = JColorChooser.showDialog(null, "Choose color", lineChosenColor);
+			if (newColor != null) {
+				lineChosenColor = newColor;
+			}
 		});
 		lineColorChooser.setMinimumSize(new Dimension(200, 20));
 		lineColorChooser.setMaximumSize(new Dimension(200, 20));
