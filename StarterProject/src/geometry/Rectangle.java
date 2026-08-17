@@ -131,4 +131,8 @@ public class Rectangle extends Shape {
 		}
 	}
 
+	@Override
+	public Rectangle clone() {
+		return new Rectangle(this.upperLeftPoint.clone(), this.width, this.height, this.borderColor, this.innerColor, this.isSelected());
+	}
 }

@@ -118,7 +118,7 @@ public class HexagonAdapter extends Shape {
     }
 
     @Override
-    public Object clone() {
+    public HexagonAdapter clone() {
         Hexagon newHexagon = new Hexagon(hexagon.getX(), hexagon.getY(), hexagon.getR());
         newHexagon.setBorderColor(hexagon.getBorderColor());
         newHexagon.setAreaColor(hexagon.getAreaColor());

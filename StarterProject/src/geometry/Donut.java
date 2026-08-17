@@ -169,4 +169,11 @@ public class Donut extends Circle {
 		this.borderColor = edgeColor;
 	}
 
+	@Override
+	public Donut clone() {
+		Donut d = new Donut(this.getCenter().clone(), this.getRadius(), this.innerRadius, this.isSelected());
+		d.setInnerColor(this.getInnerColor());
+		d.setEdgeColor(this.getEdgeColor());
+		return d;
+	}
 }

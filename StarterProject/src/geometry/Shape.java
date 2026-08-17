@@ -2,7 +2,7 @@ package geometry;
 
 import java.awt.Graphics;
 
-public abstract class Shape implements Moveable, Comparable<Object>{
+public abstract class Shape implements Moveable, Comparable<Object>, Cloneable {
 	protected boolean selected;
 	
 	public Shape() {}
@@ -15,6 +15,8 @@ public abstract class Shape implements Moveable, Comparable<Object>{
     public abstract boolean contains(int x, int y);
 	
 	public abstract void draw(Graphics g);
+
+	public abstract Shape clone();
 
 	public boolean isSelected() {
 		return selected;

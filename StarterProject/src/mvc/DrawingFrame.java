@@ -9,7 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
+import javax.swing.BorderFactory;
 import javax.swing.border.EmptyBorder;
 
 public class DrawingFrame extends JFrame {
@@ -43,14 +45,18 @@ public class DrawingFrame extends JFrame {
 		setSize(new Dimension(screenSize.width * 3 / 4, screenSize.height * 3 / 4));
 		setLocationRelativeTo(null);
 
-		// Create view (canvas)
+		// Create view (canvas) with a clean modern border and inset margin
 		view = new DrawingView();
-		view.setBorder(new EmptyBorder(5, 5, 5, 5));
+		view.setBorder(BorderFactory.createCompoundBorder(
+				new EmptyBorder(10, 10, 10, 10),
+				BorderFactory.createLineBorder(new Color(60, 60, 60), 2)
+		));
 		view.setBackground(Color.WHITE);
 
-		// Create control panel
-		JPanel pnlControls = new JPanel();
-		pnlControls.setBackground(Color.LIGHT_GRAY);
+		// Create modern toolbar instead of simple panel
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.setBorder(new EmptyBorder(8, 8, 8, 8));
 
 		tglBtnPoint = new JToggleButton("Point");
 		tglBtnLine = new JToggleButton("Line");
@@ -62,16 +68,6 @@ public class DrawingFrame extends JFrame {
 		btnModify = new JButton("Modify");
 		btnDelete = new JButton("Delete");
 
-		pnlControls.add(tglBtnPoint);
-		pnlControls.add(tglBtnLine);
-		pnlControls.add(tglBtnRectangle);
-		pnlControls.add(tglBtnCircle);
-		pnlControls.add(tglBtnDonut);
-		pnlControls.add(tglBtnHexagon);
-		pnlControls.add(btnDelete);
-		pnlControls.add(btnModify);
-		pnlControls.add(tglBtnSelect);
-
 		btnActiveEdgeColor = new JButton("Edge Color");
 		btnActiveEdgeColor.setOpaque(true);
 		btnActiveEdgeColor.setContentAreaFilled(true);
@@ -82,8 +78,51 @@ public class DrawingFrame extends JFrame {
 		updateColorButton(btnActiveEdgeColor, activeEdgeColor);
 		updateColorButton(btnActiveInnerColor, activeInnerColor);
 
-		pnlControls.add(btnActiveEdgeColor);
-		pnlControls.add(btnActiveInnerColor);
+		// Apply modern FlatLaf rounded buttons styling and helpful tooltips
+		tglBtnPoint.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnLine.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnRectangle.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnCircle.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnDonut.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnHexagon.putClientProperty("JButton.buttonType", "roundRect");
+		tglBtnSelect.putClientProperty("JButton.buttonType", "roundRect");
+		btnModify.putClientProperty("JButton.buttonType", "roundRect");
+		btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+		btnActiveEdgeColor.putClientProperty("JButton.buttonType", "roundRect");
+		btnActiveInnerColor.putClientProperty("JButton.buttonType", "roundRect");
+
+		tglBtnPoint.setToolTipText("Draw points on click");
+		tglBtnLine.setToolTipText("Select two points to draw a line");
+		tglBtnRectangle.setToolTipText("Click canvas to specify top-left position and draw rectangle");
+		tglBtnCircle.setToolTipText("Click canvas to specify center position and draw circle");
+		tglBtnDonut.setToolTipText("Click canvas to specify center position and draw donut");
+		tglBtnHexagon.setToolTipText("Click canvas to specify center position and draw hexagon");
+		tglBtnSelect.setToolTipText("Click shapes on the canvas to select them");
+		btnModify.setToolTipText("Modify properties of the selected shape");
+		btnDelete.setToolTipText("Delete the selected shape");
+		btnActiveEdgeColor.setToolTipText("Change default outline/border color for new shapes");
+		btnActiveInnerColor.setToolTipText("Change default fill/inner color for new shapes");
+
+		// Group 1: Draw Shapes
+		toolbar.add(tglBtnPoint);
+		toolbar.add(tglBtnLine);
+		toolbar.add(tglBtnRectangle);
+		toolbar.add(tglBtnCircle);
+		toolbar.add(tglBtnDonut);
+		toolbar.add(tglBtnHexagon);
+
+		toolbar.addSeparator(new Dimension(15, 10));
+
+		// Group 2: Operations
+		toolbar.add(tglBtnSelect);
+		toolbar.add(btnModify);
+		toolbar.add(btnDelete);
+
+		toolbar.addSeparator(new Dimension(15, 10));
+
+		// Group 3: Active Colors
+		toolbar.add(btnActiveEdgeColor);
+		toolbar.add(btnActiveInnerColor);
 
 		// Group the toggle buttons so only one tool is active at a time
 		ButtonGroup btnGroup = new ButtonGroup();
@@ -97,7 +136,7 @@ public class DrawingFrame extends JFrame {
 
 		// Add components to layout
 		setLayout(new BorderLayout());
-		add(pnlControls, BorderLayout.NORTH);
+		add(toolbar, BorderLayout.NORTH);
 		add(view, BorderLayout.CENTER);
 	}
 

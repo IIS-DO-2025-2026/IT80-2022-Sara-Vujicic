@@ -100,4 +100,10 @@ public class Line extends Shape {
 		return 0;
 	}
 
+	@Override
+	public Line clone() {
+		Line l = new Line(this.startPoint.clone(), this.endPoint.clone(), this.isSelected());
+		l.setColor(this.getColor());
+		return l;
+	}
 }

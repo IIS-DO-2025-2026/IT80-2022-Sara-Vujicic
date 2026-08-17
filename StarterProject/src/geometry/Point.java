@@ -108,9 +108,13 @@ public class Point extends Shape {
 			return  (int) this.distance(x, y)-p.distance(x, y);
 			}else {
 				return 0;}
-			}
-
 	}
+
+	@Override
+	public Point clone() {
+		return new Point(x, y, isSelected(), color);
+	}
+}
    
 	
 	

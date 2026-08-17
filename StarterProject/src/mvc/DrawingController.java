@@ -68,6 +68,11 @@ public class DrawingController {
 				Color newColor = JColorChooser.showDialog(frame, "Choose Edge Color", frame.getActiveEdgeColor());
 				if (newColor != null) {
 					frame.setActiveEdgeColor(newColor);
+					Shape selected = model.getSelectedShape();
+					if (selected != null) {
+						updateShapeEdgeColor(selected, newColor);
+						view.repaint();
+					}
 				}
 			}
 		});
@@ -78,6 +83,11 @@ public class DrawingController {
 				Color newColor = JColorChooser.showDialog(frame, "Choose Inner Color", frame.getActiveInnerColor());
 				if (newColor != null) {
 					frame.setActiveInnerColor(newColor);
+					Shape selected = model.getSelectedShape();
+					if (selected != null) {
+						updateShapeInnerColor(selected, newColor);
+						view.repaint();
+					}
 				}
 			}
 		});
@@ -107,7 +117,9 @@ public class DrawingController {
 			PointDialog dialog = new PointDialog(frame, x, y);
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
-				model.add(dialog.getPoint());
+				Point p = dialog.getPoint();
+				model.add(p);
+				frame.setActiveEdgeColor(p.getColor());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnLine().isSelected()) {
@@ -121,7 +133,9 @@ public class DrawingController {
 				LineDialog dialog = new LineDialog(frame, startPoint, endPoint);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					model.add(dialog.getLine());
+					Line l = dialog.getLine();
+					model.add(l);
+					frame.setActiveEdgeColor(l.getColor());
 					view.repaint();
 				}
 				startPoint = null;
@@ -132,7 +146,10 @@ public class DrawingController {
 			RectangleDialog dialog = new RectangleDialog(frame, point);
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
-				model.add(dialog.getRectangle());
+				Rectangle r = dialog.getRectangle();
+				model.add(r);
+				frame.setActiveEdgeColor(r.getBorderColor());
+				frame.setActiveInnerColor(r.getInnerColor());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnCircle().isSelected()) {
@@ -140,7 +157,10 @@ public class DrawingController {
 			CircleDialog dialog = new CircleDialog(frame, point);
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
-				model.add(dialog.getCircle());
+				Circle c = dialog.getCircle();
+				model.add(c);
+				frame.setActiveEdgeColor(c.getBorderColor());
+				frame.setActiveInnerColor(c.getInnerColor());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnDonut().isSelected()) {
@@ -148,7 +168,10 @@ public class DrawingController {
 			DonutDialog dialog = new DonutDialog(frame, point);
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
-				model.add(dialog.getDonut());
+				Donut d = dialog.getDonut();
+				model.add(d);
+				frame.setActiveEdgeColor(d.getEdgeColor());
+				frame.setActiveInnerColor(d.getInnerColor());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnHexagon().isSelected()) {
@@ -156,7 +179,10 @@ public class DrawingController {
 			HexagonDialog dialog = new HexagonDialog(frame, point);
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
-				model.add(dialog.getHexagon());
+				HexagonAdapter h = dialog.getHexagon();
+				model.add(h);
+				frame.setActiveEdgeColor(h.getEdgeColor());
+				frame.setActiveInnerColor(h.getInnerColor());
 				view.repaint();
 			}
 		} else if (frame.getTglBtnSelect().isSelected()) {
@@ -277,6 +303,34 @@ public class DrawingController {
 			JOptionPane.showMessageDialog(frame, "Please select what you want to delete!", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			frame.getTglBtnSelect().setSelected(true);
+		}
+	}
+
+	private void updateShapeEdgeColor(Shape shape, Color color) {
+		if (shape instanceof Point) {
+			((Point) shape).setColor(color);
+		} else if (shape instanceof Line) {
+			((Line) shape).setColor(color);
+		} else if (shape instanceof Rectangle) {
+			((Rectangle) shape).setBorderColor(color);
+		} else if (shape instanceof Donut) {
+			((Donut) shape).setEdgeColor(color);
+		} else if (shape instanceof Circle) {
+			((Circle) shape).setEdgeColor(color);
+		} else if (shape instanceof HexagonAdapter) {
+			((HexagonAdapter) shape).setEdgeColor(color);
+		}
+	}
+
+	private void updateShapeInnerColor(Shape shape, Color color) {
+		if (shape instanceof Rectangle) {
+			((Rectangle) shape).setInnerColor(color);
+		} else if (shape instanceof Donut) {
+			((Donut) shape).setInnerColor(color);
+		} else if (shape instanceof Circle) {
+			((Circle) shape).setInnerColor(color);
+		} else if (shape instanceof HexagonAdapter) {
+			((HexagonAdapter) shape).setInnerColor(color);
 		}
 	}
 }

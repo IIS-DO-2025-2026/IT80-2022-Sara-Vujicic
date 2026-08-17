@@ -138,4 +138,8 @@ public class Circle extends Shape {
 		}
 	}
 
+	@Override
+	public Circle clone() {
+		return new Circle(this.center.clone(), this.radius, this.isSelected(), this.innerColor, this.borderColor);
+	}
 }
