@@ -20,6 +20,7 @@ import dialog.PointDialog;
 import dialog.RectangleDialog;
 import dialog.HexagonDialog;
 import geometry.HexagonAdapter;
+import command.*;
 
 public class DrawingController {
 	private final DrawingModel model;
@@ -29,6 +30,22 @@ public class DrawingController {
 	// Transient state for drawing lines
 	private Point startPoint;
 	private Point endPoint;
+
+	private final java.util.Stack<Command> undoStack = new java.util.Stack<>();
+	private final java.util.Stack<Command> redoStack = new java.util.Stack<>();
+
+	public void executeCommand(Command cmd) {
+		cmd.execute();
+		undoStack.push(cmd);
+		redoStack.clear();
+		updateUndoRedoButtons();
+		view.repaint();
+	}
+
+	private void updateUndoRedoButtons() {
+		frame.getBtnUndo().setEnabled(!undoStack.isEmpty());
+		frame.getBtnRedo().setEnabled(!redoStack.isEmpty());
+	}
 
 	public DrawingController(DrawingModel model, DrawingFrame frame) {
 		this.model = model;
@@ -107,6 +124,32 @@ public class DrawingController {
 		frame.getTglBtnDonut().addActionListener(toolSwitchListener);
 		frame.getTglBtnHexagon().addActionListener(toolSwitchListener);
 		frame.getTglBtnSelect().addActionListener(toolSwitchListener);
+
+		frame.getBtnUndo().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!undoStack.isEmpty()) {
+					Command cmd = undoStack.pop();
+					cmd.unexecute();
+					redoStack.push(cmd);
+					updateUndoRedoButtons();
+					view.repaint();
+				}
+			}
+		});
+
+		frame.getBtnRedo().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!redoStack.isEmpty()) {
+					Command cmd = redoStack.pop();
+					cmd.execute();
+					undoStack.push(cmd);
+					updateUndoRedoButtons();
+					view.repaint();
+				}
+			}
+		});
 	}
 
 	private void handleCanvasClicked(MouseEvent e) {
@@ -118,9 +161,8 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				Point p = dialog.getPoint();
-				model.add(p);
+				executeCommand(new CmdAddShape(model, p));
 				frame.setActiveEdgeColor(p.getColor());
-				view.repaint();
 			}
 		} else if (frame.getTglBtnLine().isSelected()) {
 			if (startPoint == null) {
@@ -134,9 +176,8 @@ public class DrawingController {
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
 					Line l = dialog.getLine();
-					model.add(l);
+					executeCommand(new CmdAddShape(model, l));
 					frame.setActiveEdgeColor(l.getColor());
-					view.repaint();
 				}
 				startPoint = null;
 				endPoint = null;
@@ -147,10 +188,9 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				Rectangle r = dialog.getRectangle();
-				model.add(r);
+				executeCommand(new CmdAddShape(model, r));
 				frame.setActiveEdgeColor(r.getBorderColor());
 				frame.setActiveInnerColor(r.getInnerColor());
-				view.repaint();
 			}
 		} else if (frame.getTglBtnCircle().isSelected()) {
 			Point point = new Point(x, y);
@@ -158,10 +198,9 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				Circle c = dialog.getCircle();
-				model.add(c);
+				executeCommand(new CmdAddShape(model, c));
 				frame.setActiveEdgeColor(c.getBorderColor());
 				frame.setActiveInnerColor(c.getInnerColor());
-				view.repaint();
 			}
 		} else if (frame.getTglBtnDonut().isSelected()) {
 			Point point = new Point(x, y);
@@ -169,10 +208,9 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				Donut d = dialog.getDonut();
-				model.add(d);
+				executeCommand(new CmdAddShape(model, d));
 				frame.setActiveEdgeColor(d.getEdgeColor());
 				frame.setActiveInnerColor(d.getInnerColor());
-				view.repaint();
 			}
 		} else if (frame.getTglBtnHexagon().isSelected()) {
 			Point point = new Point(x, y);
@@ -180,106 +218,95 @@ public class DrawingController {
 			dialog.setVisible(true);
 			if (dialog.isConfirmed()) {
 				HexagonAdapter h = dialog.getHexagon();
-				model.add(h);
+				executeCommand(new CmdAddShape(model, h));
 				frame.setActiveEdgeColor(h.getEdgeColor());
 				frame.setActiveInnerColor(h.getInnerColor());
-				view.repaint();
 			}
 		} else if (frame.getTglBtnSelect().isSelected()) {
-			model.setSelectedShape(null);
-			for (Shape shape : model.getShapes()) {
-				shape.setSelected(false);
+			Shape clickedShape = null;
+			for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+				Shape shape = model.getShapes().get(i);
 				if (shape.contains(x, y)) {
-					model.setSelectedShape(shape);
+					clickedShape = shape;
+					break;
 				}
 			}
-			if (model.getSelectedShape() != null) {
-				model.getSelectedShape().setSelected(true);
+
+			Shape previouslySelected = model.getSelectedShape();
+			if (clickedShape != null) {
+				if (clickedShape != previouslySelected) {
+					if (previouslySelected != null) {
+						executeCommand(new CmdDeselectShape(model, previouslySelected));
+					}
+					executeCommand(new CmdSelectShape(model, clickedShape));
+				}
+			} else {
+				if (previouslySelected != null) {
+					executeCommand(new CmdDeselectShape(model, previouslySelected));
+				}
 			}
-			view.repaint();
 		}
 	}
 
 	private void handleModify() {
 		Shape selected = model.getSelectedShape();
 		if (selected != null) {
-			selected.setSelected(false);
-			frame.getTglBtnSelect().setSelected(false);
+			Shape oldState = selected.clone();
+			Shape newState = selected.clone();
 
 			if (selected instanceof Point) {
-				Point p = (Point) selected;
+				Point p = (Point) newState;
 				PointDialog dialog = new PointDialog(frame, p);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					p.setX(dialog.getPoint().getX());
-					p.setY(dialog.getPoint().getY());
-					p.setColor(dialog.getPoint().getColor());
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			} else if (selected instanceof Line) {
-				Line l = (Line) selected;
+				Line l = (Line) newState;
 				LineDialog dialog = new LineDialog(frame, l);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					l.setStartPoint(dialog.getLine().getStartPoint());
-					l.setEndPoint(dialog.getLine().getEndPoint());
-					l.setColor(dialog.getLine().getColor());
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			} else if (selected instanceof Rectangle) {
-				Rectangle r = (Rectangle) selected;
+				Rectangle r = (Rectangle) newState;
 				RectangleDialog dialog = new RectangleDialog(frame, r);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					r.setUpperLeftPoint(dialog.getRectangle().getUpperLeftPoint());
-					r.setWidth(dialog.getRectangle().getWidth());
-					r.setHeight(dialog.getRectangle().getHeight());
-					r.setInnerColor(dialog.getRectangle().getInnerColor());
-					r.setBorderColor(dialog.getRectangle().getBorderColor());
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			} else if (selected instanceof Donut) {
-				Donut d = (Donut) selected;
+				Donut d = (Donut) newState;
 				DonutDialog dialog = new DonutDialog(frame, d);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					try {
-						d.setCenter(dialog.getDonut().getCenter());
-						d.setRadius(dialog.getDonut().getRadius());
-						d.setInnerRadius(dialog.getDonut().getInnerRadius());
-						d.setInnerColor(dialog.getDonut().getInnerColor());
-						d.setBorderColor(dialog.getDonut().getBorderColor());
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					}
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			} else if (selected instanceof Circle) {
-				Circle c = (Circle) selected;
+				Circle c = (Circle) newState;
 				CircleDialog dialog = new CircleDialog(frame, c);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					try {
-						c.setCenter(dialog.getCircle().getCenter());
-						c.setRadius(dialog.getCircle().getRadius());
-						c.setInnerColor(dialog.getCircle().getInnerColor());
-						c.setBorderColor(dialog.getCircle().getBorderColor());
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					}
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			} else if (selected instanceof HexagonAdapter) {
-				HexagonAdapter h = (HexagonAdapter) selected;
+				HexagonAdapter h = (HexagonAdapter) newState;
 				HexagonDialog dialog = new HexagonDialog(frame, h);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
-					try {
-						h.setCenter(dialog.getHexagon().getCenter());
-						h.setRadius(dialog.getHexagon().getRadius());
-						h.setInnerColor(dialog.getHexagon().getInnerColor());
-						h.setEdgeColor(dialog.getHexagon().getEdgeColor());
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(frame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					}
+					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
+					executeCommand(cmd);
 				}
 			}
-			model.setSelectedShape(null);
+			
+			// Selected shape must remain selected after modification
+			selected.setSelected(true);
+			model.setSelectedShape(selected);
 			view.repaint();
 		} else {
 			JOptionPane.showMessageDialog(frame, "Please select what you want to modify!", "Error",
@@ -294,9 +321,7 @@ public class DrawingController {
 			int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this shape?", "Confirm",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {
-				model.remove(selected);
-				model.setSelectedShape(null);
-				view.repaint();
+				executeCommand(new CmdRemoveShape(model, selected));
 			}
 			frame.getTglBtnSelect().setSelected(false);
 		} else {

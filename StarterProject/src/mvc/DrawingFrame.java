@@ -34,6 +34,8 @@ public class DrawingFrame extends JFrame {
 	private Color activeInnerColor = Color.WHITE;
 	private final JButton btnActiveEdgeColor;
 	private final JButton btnActiveInnerColor;
+	private final JButton btnUndo;
+	private final JButton btnRedo;
 
 	public DrawingFrame() {
 		setTitle("Vujicic Sara IT80/2022");
@@ -75,6 +77,11 @@ public class DrawingFrame extends JFrame {
 		btnActiveInnerColor.setOpaque(true);
 		btnActiveInnerColor.setContentAreaFilled(true);
 
+		btnUndo = new JButton("Undo");
+		btnRedo = new JButton("Redo");
+		btnUndo.setEnabled(false);
+		btnRedo.setEnabled(false);
+
 		updateColorButton(btnActiveEdgeColor, activeEdgeColor);
 		updateColorButton(btnActiveInnerColor, activeInnerColor);
 
@@ -90,6 +97,8 @@ public class DrawingFrame extends JFrame {
 		btnDelete.putClientProperty("JButton.buttonType", "roundRect");
 		btnActiveEdgeColor.putClientProperty("JButton.buttonType", "roundRect");
 		btnActiveInnerColor.putClientProperty("JButton.buttonType", "roundRect");
+		btnUndo.putClientProperty("JButton.buttonType", "roundRect");
+		btnRedo.putClientProperty("JButton.buttonType", "roundRect");
 
 		tglBtnPoint.setToolTipText("Draw points on click");
 		tglBtnLine.setToolTipText("Select two points to draw a line");
@@ -102,6 +111,8 @@ public class DrawingFrame extends JFrame {
 		btnDelete.setToolTipText("Delete the selected shape");
 		btnActiveEdgeColor.setToolTipText("Change default outline/border color for new shapes");
 		btnActiveInnerColor.setToolTipText("Change default fill/inner color for new shapes");
+		btnUndo.setToolTipText("Undo the last operation");
+		btnRedo.setToolTipText("Redo the last undone operation");
 
 		// Group 1: Draw Shapes
 		toolbar.add(tglBtnPoint);
@@ -123,6 +134,12 @@ public class DrawingFrame extends JFrame {
 		// Group 3: Active Colors
 		toolbar.add(btnActiveEdgeColor);
 		toolbar.add(btnActiveInnerColor);
+
+		toolbar.addSeparator(new Dimension(15, 10));
+
+		// Group 4: History / Management
+		toolbar.add(btnUndo);
+		toolbar.add(btnRedo);
 
 		// Group the toggle buttons so only one tool is active at a time
 		ButtonGroup btnGroup = new ButtonGroup();
@@ -212,6 +229,14 @@ public class DrawingFrame extends JFrame {
 	public void setActiveInnerColor(Color color) {
 		this.activeInnerColor = color;
 		updateColorButton(btnActiveInnerColor, color);
+	}
+
+	public JButton getBtnUndo() {
+		return btnUndo;
+	}
+
+	public JButton getBtnRedo() {
+		return btnRedo;
 	}
 
 	private void updateColorButton(JButton button, Color color) {
