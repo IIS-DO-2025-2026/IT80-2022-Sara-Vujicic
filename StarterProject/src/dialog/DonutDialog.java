@@ -35,7 +35,7 @@ public class DonutDialog extends JDialog {
 		GridBagConstraints gbc = new GridBagConstraints();
 		setLayout(new GridBagLayout());
 
-		// Center coordinate inputs
+		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		add(new JLabel("Center Point: "), gbc);
@@ -61,7 +61,7 @@ public class DonutDialog extends JDialog {
 		yField.setPreferredSize(new Dimension(200, 20));
 		add(yField, gbc);
 
-		// Radius inputs
+		
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		add(new JLabel("Inner radius: "), gbc);

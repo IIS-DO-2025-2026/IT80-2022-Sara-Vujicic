@@ -34,7 +34,7 @@ public class Circle extends Shape {
 
 	}
 
-	// Circumference of the circle
+	
 	public double circumference(int radius) {
 		return 2 * radius * Math.PI;
 	}

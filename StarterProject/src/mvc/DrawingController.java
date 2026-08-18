@@ -27,7 +27,7 @@ public class DrawingController {
 	private final DrawingFrame frame;
 	private final DrawingView view;
 
-	// Transient state for drawing lines
+	
 	private Point startPoint;
 	private Point endPoint;
 
@@ -56,7 +56,7 @@ public class DrawingController {
 	}
 
 	private void initListeners() {
-		// Mouse clicks on canvas
+		
 		view.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -64,7 +64,7 @@ public class DrawingController {
 			}
 		});
 
-		// Controls (Modify / Delete buttons)
+		
 		frame.getBtnModify().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -109,7 +109,7 @@ public class DrawingController {
 			}
 		});
 
-		// Tool switching: reset line drawing coordinates
+		
 		ActionListener toolSwitchListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -147,6 +147,74 @@ public class DrawingController {
 					undoStack.push(cmd);
 					updateUndoRedoButtons();
 					view.repaint();
+				}
+			}
+		});
+
+		frame.getBtnToFront().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Shape selected = model.getSelectedShape();
+				if (selected != null) {
+					int index = model.getShapes().indexOf(selected);
+					if (index >= 0 && index < model.getShapes().size() - 1) {
+						executeCommand(new CmdToFront(model, selected));
+					} else {
+						JOptionPane.showMessageDialog(frame, "The shape is already at the front!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+				}
+			}
+		});
+
+		frame.getBtnToBack().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Shape selected = model.getSelectedShape();
+				if (selected != null) {
+					int index = model.getShapes().indexOf(selected);
+					if (index > 0) {
+						executeCommand(new CmdToBack(model, selected));
+					} else {
+						JOptionPane.showMessageDialog(frame, "The shape is already at the back!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+				}
+			}
+		});
+
+		frame.getBtnBringToFront().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Shape selected = model.getSelectedShape();
+				if (selected != null) {
+					int index = model.getShapes().indexOf(selected);
+					if (index >= 0 && index < model.getShapes().size() - 1) {
+						executeCommand(new CmdBringToFront(model, selected));
+					} else {
+						JOptionPane.showMessageDialog(frame, "The shape is already at the front!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+				}
+			}
+		});
+
+		frame.getBtnBringToBack().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Shape selected = model.getSelectedShape();
+				if (selected != null) {
+					int index = model.getShapes().indexOf(selected);
+					if (index > 0) {
+						executeCommand(new CmdBringToBack(model, selected));
+					} else {
+						JOptionPane.showMessageDialog(frame, "The shape is already at the back!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
 				}
 			}
 		});
@@ -304,7 +372,7 @@ public class DrawingController {
 				}
 			}
 			
-			// Selected shape must remain selected after modification
+			
 			selected.setSelected(true);
 			model.setSelectedShape(selected);
 			view.repaint();

@@ -81,7 +81,7 @@ public class HexagonAdapter extends Shape {
         hexagon.setAreaColor(color);
     }
 
-    // Color alias methods
+    
     public Color getEdgeColor() {
         return getBorderColor();
     }

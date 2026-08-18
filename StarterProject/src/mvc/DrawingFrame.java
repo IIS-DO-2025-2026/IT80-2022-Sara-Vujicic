@@ -29,6 +29,10 @@ public class DrawingFrame extends JFrame {
 	private final JToggleButton tglBtnSelect;
 	private final JButton btnModify;
 	private final JButton btnDelete;
+	private final JButton btnToFront;
+	private final JButton btnToBack;
+	private final JButton btnBringToFront;
+	private final JButton btnBringToBack;
 
 	private Color activeEdgeColor = Color.BLACK;
 	private Color activeInnerColor = Color.WHITE;
@@ -41,13 +45,13 @@ public class DrawingFrame extends JFrame {
 		setTitle("Vujicic Sara IT80/2022");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		// Size and position
+		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
 		setSize(new Dimension(screenSize.width * 3 / 4, screenSize.height * 3 / 4));
 		setLocationRelativeTo(null);
 
-		// Create view (canvas) with a clean modern border and inset margin
+		
 		view = new DrawingView();
 		view.setBorder(BorderFactory.createCompoundBorder(
 				new EmptyBorder(10, 10, 10, 10),
@@ -55,7 +59,7 @@ public class DrawingFrame extends JFrame {
 		));
 		view.setBackground(Color.WHITE);
 
-		// Create modern toolbar instead of simple panel
+		
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 		toolbar.setBorder(new EmptyBorder(8, 8, 8, 8));
@@ -69,6 +73,10 @@ public class DrawingFrame extends JFrame {
 		tglBtnSelect = new JToggleButton("Select");
 		btnModify = new JButton("Modify");
 		btnDelete = new JButton("Delete");
+		btnToFront = new JButton("To Front");
+		btnToBack = new JButton("To Back");
+		btnBringToFront = new JButton("Bring To Front");
+		btnBringToBack = new JButton("Bring To Back");
 
 		btnActiveEdgeColor = new JButton("Edge Color");
 		btnActiveEdgeColor.setOpaque(true);
@@ -85,7 +93,7 @@ public class DrawingFrame extends JFrame {
 		updateColorButton(btnActiveEdgeColor, activeEdgeColor);
 		updateColorButton(btnActiveInnerColor, activeInnerColor);
 
-		// Apply modern FlatLaf rounded buttons styling and helpful tooltips
+		
 		tglBtnPoint.putClientProperty("JButton.buttonType", "roundRect");
 		tglBtnLine.putClientProperty("JButton.buttonType", "roundRect");
 		tglBtnRectangle.putClientProperty("JButton.buttonType", "roundRect");
@@ -95,6 +103,10 @@ public class DrawingFrame extends JFrame {
 		tglBtnSelect.putClientProperty("JButton.buttonType", "roundRect");
 		btnModify.putClientProperty("JButton.buttonType", "roundRect");
 		btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+		btnToFront.putClientProperty("JButton.buttonType", "roundRect");
+		btnToBack.putClientProperty("JButton.buttonType", "roundRect");
+		btnBringToFront.putClientProperty("JButton.buttonType", "roundRect");
+		btnBringToBack.putClientProperty("JButton.buttonType", "roundRect");
 		btnActiveEdgeColor.putClientProperty("JButton.buttonType", "roundRect");
 		btnActiveInnerColor.putClientProperty("JButton.buttonType", "roundRect");
 		btnUndo.putClientProperty("JButton.buttonType", "roundRect");
@@ -109,12 +121,16 @@ public class DrawingFrame extends JFrame {
 		tglBtnSelect.setToolTipText("Click shapes on the canvas to select them");
 		btnModify.setToolTipText("Modify properties of the selected shape");
 		btnDelete.setToolTipText("Delete the selected shape");
+		btnToFront.setToolTipText("Move selected shape one step forward in Z-order");
+		btnToBack.setToolTipText("Move selected shape one step backward in Z-order");
+		btnBringToFront.setToolTipText("Bring selected shape to the very top in Z-order");
+		btnBringToBack.setToolTipText("Bring selected shape to the very bottom in Z-order");
 		btnActiveEdgeColor.setToolTipText("Change default outline/border color for new shapes");
 		btnActiveInnerColor.setToolTipText("Change default fill/inner color for new shapes");
 		btnUndo.setToolTipText("Undo the last operation");
 		btnRedo.setToolTipText("Redo the last undone operation");
 
-		// Group 1: Draw Shapes
+		
 		toolbar.add(tglBtnPoint);
 		toolbar.add(tglBtnLine);
 		toolbar.add(tglBtnRectangle);
@@ -128,20 +144,24 @@ public class DrawingFrame extends JFrame {
 		toolbar.add(tglBtnSelect);
 		toolbar.add(btnModify);
 		toolbar.add(btnDelete);
+		toolbar.add(btnToFront);
+		toolbar.add(btnToBack);
+		toolbar.add(btnBringToFront);
+		toolbar.add(btnBringToBack);
 
 		toolbar.addSeparator(new Dimension(15, 10));
 
-		// Group 3: Active Colors
+	
 		toolbar.add(btnActiveEdgeColor);
 		toolbar.add(btnActiveInnerColor);
 
 		toolbar.addSeparator(new Dimension(15, 10));
 
-		// Group 4: History / Management
+	
 		toolbar.add(btnUndo);
 		toolbar.add(btnRedo);
 
-		// Group the toggle buttons so only one tool is active at a time
+		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(tglBtnPoint);
 		btnGroup.add(tglBtnLine);
@@ -151,7 +171,7 @@ public class DrawingFrame extends JFrame {
 		btnGroup.add(tglBtnHexagon);
 		btnGroup.add(tglBtnSelect);
 
-		// Add components to layout
+		
 		setLayout(new BorderLayout());
 		add(toolbar, BorderLayout.NORTH);
 		add(view, BorderLayout.CENTER);
@@ -237,6 +257,22 @@ public class DrawingFrame extends JFrame {
 
 	public JButton getBtnRedo() {
 		return btnRedo;
+	}
+
+	public JButton getBtnToFront() {
+		return btnToFront;
+	}
+
+	public JButton getBtnToBack() {
+		return btnToBack;
+	}
+
+	public JButton getBtnBringToFront() {
+		return btnBringToFront;
+	}
+
+	public JButton getBtnBringToBack() {
+		return btnBringToBack;
 	}
 
 	private void updateColorButton(JButton button, Color color) {

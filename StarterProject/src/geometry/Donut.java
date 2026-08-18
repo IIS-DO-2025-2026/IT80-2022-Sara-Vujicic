@@ -106,19 +106,19 @@ public class Donut extends Circle {
 	private void drawSelectionSquares(Graphics2D g2d, int centerX, int centerY, int outerRadius, int innerRadius) {
 		g2d.setColor(Color.BLUE);
 
-		// Outer circle selection squares
+		
 		drawSingleSelectionSquare(g2d, centerX - outerRadius, centerY);
 		drawSingleSelectionSquare(g2d, centerX + outerRadius, centerY);
 		drawSingleSelectionSquare(g2d, centerX, centerY - outerRadius);
 		drawSingleSelectionSquare(g2d, centerX, centerY + outerRadius);
 
-		// Inner circle selection squares
+		
 		drawSingleSelectionSquare(g2d, centerX - innerRadius, centerY);
 		drawSingleSelectionSquare(g2d, centerX + innerRadius, centerY);
 		drawSingleSelectionSquare(g2d, centerX, centerY - innerRadius);
 		drawSingleSelectionSquare(g2d, centerX, centerY + innerRadius);
 
-		// Center selection square
+		
 		drawSingleSelectionSquare(g2d, centerX, centerY);
 	}
 

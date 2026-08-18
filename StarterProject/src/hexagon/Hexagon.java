@@ -94,7 +94,7 @@ public class Hexagon {
             g.drawPolygon(polygon);
         }
         if (selected) {
-            // Draw standard selection squares at the vertices and center
+           
             g.setColor(Color.BLUE);
             for (int i = 0; i < polygon.npoints; i++) {
                 g.fillRect(polygon.xpoints[i] - 3, polygon.ypoints[i] - 3, 6, 6);

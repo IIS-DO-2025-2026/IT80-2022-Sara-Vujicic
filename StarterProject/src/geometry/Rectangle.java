@@ -27,12 +27,12 @@ public class Rectangle extends Shape {
 		this.selected = selected;
 	}
 
-	// Area of the rectangle
+	
 	public int area(int width, int height) {
 		return width * height;
 	}
 
-	// Circumference of the rectangle
+	
 	public int circumference(int width, int height) {
 		return 2 * width + 2 * height;
 	}
