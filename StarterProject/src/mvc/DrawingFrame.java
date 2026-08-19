@@ -14,7 +14,10 @@ import javax.swing.WindowConstants;
 import javax.swing.BorderFactory;
 import javax.swing.border.EmptyBorder;
 
-public class DrawingFrame extends JFrame {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class DrawingFrame extends JFrame implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
 
 	private final DrawingView view;
@@ -77,6 +80,13 @@ public class DrawingFrame extends JFrame {
 		btnToBack = new JButton("To Back");
 		btnBringToFront = new JButton("Bring To Front");
 		btnBringToBack = new JButton("Bring To Back");
+
+		btnModify.setEnabled(false);
+		btnDelete.setEnabled(false);
+		btnToFront.setEnabled(false);
+		btnToBack.setEnabled(false);
+		btnBringToFront.setEnabled(false);
+		btnBringToBack.setEnabled(false);
 
 		btnActiveEdgeColor = new JButton("Edge Color");
 		btnActiveEdgeColor.setOpaque(true);
@@ -279,5 +289,22 @@ public class DrawingFrame extends JFrame {
 		button.setBackground(color);
 		double luma = 0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue();
 		button.setForeground(luma < 128 ? Color.WHITE : Color.BLACK);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if ("selectedCount".equals(evt.getPropertyName())) {
+			int count = (int) evt.getNewValue();
+			btnDelete.setEnabled(count >= 1);
+			btnModify.setEnabled(count == 1);
+		} else if ("toFrontEnabled".equals(evt.getPropertyName())) {
+			btnToFront.setEnabled((boolean) evt.getNewValue());
+		} else if ("toBackEnabled".equals(evt.getPropertyName())) {
+			btnToBack.setEnabled((boolean) evt.getNewValue());
+		} else if ("bringToFrontEnabled".equals(evt.getPropertyName())) {
+			btnBringToFront.setEnabled((boolean) evt.getNewValue());
+		} else if ("bringToBackEnabled".equals(evt.getPropertyName())) {
+			btnBringToBack.setEnabled((boolean) evt.getNewValue());
+		}
 	}
 }

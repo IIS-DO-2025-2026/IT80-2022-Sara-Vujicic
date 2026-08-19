@@ -77,6 +77,12 @@ public class Line extends Shape {
 	public void draw(Graphics g) {
 		g.setColor(color);
 		g.drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+		if (isSelected()) {
+			g.setColor(Color.BLUE);
+			g.fillRect(startPoint.getX() - 3, startPoint.getY() - 3, 6, 6);
+			g.fillRect(endPoint.getX() - 3, endPoint.getY() - 3, 6, 6);
+			g.fillRect((startPoint.getX() + endPoint.getX()) / 2 - 3, (startPoint.getY() + endPoint.getY()) / 2 - 3, 6, 6);
+		}
 	}
 
 	@Override

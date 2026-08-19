@@ -110,6 +110,14 @@ public class Rectangle extends Shape {
 		g.fillRect(upperLeftPoint.getX(), upperLeftPoint.getY(), width, height);
 		g.setColor(borderColor);
 		g.drawRect(upperLeftPoint.getX(), upperLeftPoint.getY(), width, height);
+		if (isSelected()) {
+			g.setColor(Color.BLUE);
+			g.fillRect(upperLeftPoint.getX() - 3, upperLeftPoint.getY() - 3, 6, 6);
+			g.fillRect(upperLeftPoint.getX() + width - 3, upperLeftPoint.getY() - 3, 6, 6);
+			g.fillRect(upperLeftPoint.getX() - 3, upperLeftPoint.getY() + height - 3, 6, 6);
+			g.fillRect(upperLeftPoint.getX() + width - 3, upperLeftPoint.getY() + height - 3, 6, 6);
+			g.fillRect(upperLeftPoint.getX() + width / 2 - 3, upperLeftPoint.getY() + height / 2 - 3, 6, 6);
+		}
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package mvc;
 
+import java.util.List;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +22,7 @@ import dialog.RectangleDialog;
 import dialog.HexagonDialog;
 import geometry.HexagonAdapter;
 import command.*;
+import java.beans.PropertyChangeSupport;
 
 public class DrawingController {
 	private final DrawingModel model;
@@ -31,6 +33,7 @@ public class DrawingController {
 	private Point startPoint;
 	private Point endPoint;
 
+	private final PropertyChangeSupport propertyChangeSupport;
 	private final java.util.Stack<Command> undoStack = new java.util.Stack<>();
 	private final java.util.Stack<Command> redoStack = new java.util.Stack<>();
 
@@ -39,6 +42,7 @@ public class DrawingController {
 		undoStack.push(cmd);
 		redoStack.clear();
 		updateUndoRedoButtons();
+		updateButtonsState();
 		view.repaint();
 	}
 
@@ -51,8 +55,12 @@ public class DrawingController {
 		this.model = model;
 		this.frame = frame;
 		this.view = frame.getView();
+		this.propertyChangeSupport = new PropertyChangeSupport(this);
+		this.propertyChangeSupport.addPropertyChangeListener(frame);
 
 		initListeners();
+		updateUndoRedoButtons();
+		updateButtonsState();
 	}
 
 	private void initListeners() {
@@ -133,6 +141,7 @@ public class DrawingController {
 					cmd.unexecute();
 					redoStack.push(cmd);
 					updateUndoRedoButtons();
+					updateButtonsState();
 					view.repaint();
 				}
 			}
@@ -146,6 +155,7 @@ public class DrawingController {
 					cmd.execute();
 					undoStack.push(cmd);
 					updateUndoRedoButtons();
+					updateButtonsState();
 					view.repaint();
 				}
 			}
@@ -154,7 +164,7 @@ public class DrawingController {
 		frame.getBtnToFront().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Shape selected = model.getSelectedShape();
+				Shape selected = getSingleSelectedShape();
 				if (selected != null) {
 					int index = model.getShapes().indexOf(selected);
 					if (index >= 0 && index < model.getShapes().size() - 1) {
@@ -163,7 +173,7 @@ public class DrawingController {
 						JOptionPane.showMessageDialog(frame, "The shape is already at the front!");
 					}
 				} else {
-					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+					JOptionPane.showMessageDialog(frame, "Please select exactly one shape!");
 				}
 			}
 		});
@@ -171,7 +181,7 @@ public class DrawingController {
 		frame.getBtnToBack().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Shape selected = model.getSelectedShape();
+				Shape selected = getSingleSelectedShape();
 				if (selected != null) {
 					int index = model.getShapes().indexOf(selected);
 					if (index > 0) {
@@ -180,7 +190,7 @@ public class DrawingController {
 						JOptionPane.showMessageDialog(frame, "The shape is already at the back!");
 					}
 				} else {
-					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+					JOptionPane.showMessageDialog(frame, "Please select exactly one shape!");
 				}
 			}
 		});
@@ -188,7 +198,7 @@ public class DrawingController {
 		frame.getBtnBringToFront().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Shape selected = model.getSelectedShape();
+				Shape selected = getSingleSelectedShape();
 				if (selected != null) {
 					int index = model.getShapes().indexOf(selected);
 					if (index >= 0 && index < model.getShapes().size() - 1) {
@@ -197,7 +207,7 @@ public class DrawingController {
 						JOptionPane.showMessageDialog(frame, "The shape is already at the front!");
 					}
 				} else {
-					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+					JOptionPane.showMessageDialog(frame, "Please select exactly one shape!");
 				}
 			}
 		});
@@ -205,7 +215,7 @@ public class DrawingController {
 		frame.getBtnBringToBack().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Shape selected = model.getSelectedShape();
+				Shape selected = getSingleSelectedShape();
 				if (selected != null) {
 					int index = model.getShapes().indexOf(selected);
 					if (index > 0) {
@@ -214,7 +224,7 @@ public class DrawingController {
 						JOptionPane.showMessageDialog(frame, "The shape is already at the back!");
 					}
 				} else {
-					JOptionPane.showMessageDialog(frame, "Please select a shape first!");
+					JOptionPane.showMessageDialog(frame, "Please select exactly one shape!");
 				}
 			}
 		});
@@ -300,24 +310,28 @@ public class DrawingController {
 				}
 			}
 
-			Shape previouslySelected = model.getSelectedShape();
 			if (clickedShape != null) {
-				if (clickedShape != previouslySelected) {
-					if (previouslySelected != null) {
-						executeCommand(new CmdDeselectShape(model, previouslySelected));
-					}
+				if (clickedShape.isSelected()) {
+					executeCommand(new CmdDeselectShape(model, clickedShape));
+				} else {
 					executeCommand(new CmdSelectShape(model, clickedShape));
 				}
 			} else {
-				if (previouslySelected != null) {
-					executeCommand(new CmdDeselectShape(model, previouslySelected));
+				List<Shape> toDeselect = new java.util.ArrayList<>();
+				for (Shape s : model.getShapes()) {
+					if (s.isSelected()) {
+						toDeselect.add(s);
+					}
+				}
+				for (Shape s : toDeselect) {
+					executeCommand(new CmdDeselectShape(model, s));
 				}
 			}
 		}
 	}
 
 	private void handleModify() {
-		Shape selected = model.getSelectedShape();
+		Shape selected = getSingleSelectedShape();
 		if (selected != null) {
 			Shape oldState = selected.clone();
 			Shape newState = selected.clone();
@@ -372,24 +386,30 @@ public class DrawingController {
 				}
 			}
 			
-			
 			selected.setSelected(true);
 			model.setSelectedShape(selected);
 			view.repaint();
 		} else {
-			JOptionPane.showMessageDialog(frame, "Please select what you want to modify!", "Error",
+			JOptionPane.showMessageDialog(frame, "Please select exactly one shape to modify!", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			frame.getTglBtnSelect().setSelected(true);
 		}
 	}
 
 	private void handleDelete() {
-		Shape selected = model.getSelectedShape();
-		if (selected != null) {
-			int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this shape?", "Confirm",
+		List<Shape> selected = new java.util.ArrayList<>();
+		for (Shape s : model.getShapes()) {
+			if (s.isSelected()) {
+				selected.add(s);
+			}
+		}
+		if (!selected.isEmpty()) {
+			int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete the selected shape(s)?", "Confirm",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {
-				executeCommand(new CmdRemoveShape(model, selected));
+				for (Shape s : selected) {
+					executeCommand(new CmdRemoveShape(model, s));
+				}
 			}
 			frame.getTglBtnSelect().setSelected(false);
 		} else {
@@ -397,6 +417,58 @@ public class DrawingController {
 					JOptionPane.ERROR_MESSAGE);
 			frame.getTglBtnSelect().setSelected(true);
 		}
+	}
+
+	private Shape getSingleSelectedShape() {
+		Shape selected = null;
+		for (Shape s : model.getShapes()) {
+			if (s.isSelected()) {
+				if (selected != null) {
+					return null;
+				}
+				selected = s;
+			}
+		}
+		return selected;
+	}
+
+	private void updateButtonsState() {
+		int count = 0;
+		Shape single = null;
+		for (Shape s : model.getShapes()) {
+			if (s.isSelected()) {
+				count++;
+				single = s;
+			}
+		}
+
+		if (count == 1) {
+			model.setSelectedShape(single);
+		} else {
+			model.setSelectedShape(null);
+		}
+
+		propertyChangeSupport.firePropertyChange("selectedCount", -1, count);
+
+		boolean toFront = false;
+		boolean toBack = false;
+		boolean bringToFront = false;
+		boolean bringToBack = false;
+
+		if (count == 1 && single != null) {
+			int index = model.getShapes().indexOf(single);
+			if (index >= 0) {
+				toFront = (index < model.getShapes().size() - 1);
+				bringToFront = toFront;
+				toBack = (index > 0);
+				bringToBack = toBack;
+			}
+		}
+
+		propertyChangeSupport.firePropertyChange("toFrontEnabled", null, toFront);
+		propertyChangeSupport.firePropertyChange("toBackEnabled", null, toBack);
+		propertyChangeSupport.firePropertyChange("bringToFrontEnabled", null, bringToFront);
+		propertyChangeSupport.firePropertyChange("bringToBackEnabled", null, bringToBack);
 	}
 
 	private void updateShapeEdgeColor(Shape shape, Color color) {

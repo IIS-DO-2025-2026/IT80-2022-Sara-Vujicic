@@ -86,6 +86,10 @@ public class Point extends Shape {
 	public void draw(Graphics g) {
 		g.setColor(color);
 		g.fillOval(x - 5, y - 5, 5, 5);	
+		if (isSelected()) {
+			g.setColor(Color.BLUE);
+			g.fillRect(x - 3, y - 3, 6, 6);
+		}
 	}
 
    @Override

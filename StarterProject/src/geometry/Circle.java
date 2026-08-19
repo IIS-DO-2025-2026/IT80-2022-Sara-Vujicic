@@ -115,6 +115,14 @@ public class Circle extends Shape {
 		g.fillOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
 		g.setColor(borderColor);
 		g.drawOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
+		if (isSelected()) {
+			g.setColor(Color.BLUE);
+			g.fillRect(center.getX() - 3, center.getY() - 3, 6, 6);
+			g.fillRect(center.getX() - radius - 3, center.getY() - 3, 6, 6);
+			g.fillRect(center.getX() + radius - 3, center.getY() - 3, 6, 6);
+			g.fillRect(center.getX() - 3, center.getY() - radius - 3, 6, 6);
+			g.fillRect(center.getX() - 3, center.getY() + radius - 3, 6, 6);
+		}
 	}
 
 	@Override
