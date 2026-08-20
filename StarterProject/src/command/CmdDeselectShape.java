@@ -28,6 +28,6 @@ public class CmdDeselectShape implements Command {
 
     @Override
     public String toString() {
-        return "Deselected " + shape.getClass().getSimpleName() + " at " + shape.toString();
+        return "Deselected:" + Command.getShapeLogString(shape);
     }
 }

@@ -28,6 +28,6 @@ public class CmdSelectShape implements Command {
 
     @Override
     public String toString() {
-        return "Selected " + shape.getClass().getSimpleName() + " at " + shape.toString();
+        return "Selected:" + Command.getShapeLogString(shape);
     }
 }

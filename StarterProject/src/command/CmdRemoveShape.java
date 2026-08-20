@@ -24,6 +24,6 @@ public class CmdRemoveShape implements Command {
 
     @Override
     public String toString() {
-        return "Removed " + shape.getClass().getSimpleName() + " at " + shape.toString();
+        return "Removed:" + Command.getShapeLogString(shape);
     }
 }

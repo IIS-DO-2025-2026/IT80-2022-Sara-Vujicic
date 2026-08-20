@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import hexagon.Hexagon;
 
 public class HexagonAdapter extends Shape {
-    private Hexagon hexagon;
+    private transient Hexagon hexagon;
 
     public HexagonAdapter(Point center, int radius) {
         this.hexagon = new Hexagon(center.getX(), center.getY(), radius);
@@ -134,5 +134,30 @@ public class HexagonAdapter extends Shape {
         } else {
             return 0;
         }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+        out.defaultWriteObject();
+        out.writeInt(hexagon.getX());
+        out.writeInt(hexagon.getY());
+        out.writeInt(hexagon.getR());
+        out.writeObject(hexagon.getBorderColor());
+        out.writeObject(hexagon.getAreaColor());
+        out.writeBoolean(hexagon.isSelected());
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        int x = in.readInt();
+        int y = in.readInt();
+        int r = in.readInt();
+        Color border = (Color) in.readObject();
+        Color area = (Color) in.readObject();
+        boolean selected = in.readBoolean();
+        
+        hexagon = new Hexagon(x, y, r);
+        hexagon.setBorderColor(border);
+        hexagon.setAreaColor(area);
+        hexagon.setSelected(selected);
     }
 }

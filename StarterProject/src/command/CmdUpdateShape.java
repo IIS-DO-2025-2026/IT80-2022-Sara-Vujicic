@@ -77,6 +77,6 @@ public class CmdUpdateShape implements Command {
 
     @Override
     public String toString() {
-        return "Updated " + target.getClass().getSimpleName() + " from " + oldState.toString() + " to " + newState.toString();
+        return "Updated:" + Command.getShapeLogString(oldState) + "->" + Command.getShapeLogString(newState);
     }
 }

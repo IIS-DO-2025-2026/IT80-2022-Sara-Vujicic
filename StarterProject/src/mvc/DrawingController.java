@@ -1,6 +1,7 @@
 package mvc;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -22,14 +24,16 @@ import dialog.RectangleDialog;
 import dialog.HexagonDialog;
 import geometry.HexagonAdapter;
 import command.*;
+import strategy.*;
 import java.beans.PropertyChangeSupport;
+import java.io.*;
+import java.nio.file.Files;
 
 public class DrawingController {
 	private final DrawingModel model;
 	private final DrawingFrame frame;
 	private final DrawingView view;
 
-	
 	private Point startPoint;
 	private Point endPoint;
 
@@ -37,12 +41,16 @@ public class DrawingController {
 	private final java.util.Stack<Command> undoStack = new java.util.Stack<>();
 	private final java.util.Stack<Command> redoStack = new java.util.Stack<>();
 
+	private List<String> logLines = new ArrayList<>();
+	private int logLineIndex = 0;
+
 	public void executeCommand(Command cmd) {
 		cmd.execute();
 		undoStack.push(cmd);
 		redoStack.clear();
 		updateUndoRedoButtons();
 		updateButtonsState();
+		frame.getTxtAreaLog().append(cmd.toString() + "\n");
 		view.repaint();
 	}
 
@@ -142,6 +150,7 @@ public class DrawingController {
 					redoStack.push(cmd);
 					updateUndoRedoButtons();
 					updateButtonsState();
+					frame.getTxtAreaLog().append("Undo:" + cmd.toString() + "\n");
 					view.repaint();
 				}
 			}
@@ -156,6 +165,7 @@ public class DrawingController {
 					undoStack.push(cmd);
 					updateUndoRedoButtons();
 					updateButtonsState();
+					frame.getTxtAreaLog().append("Redo:" + cmd.toString() + "\n");
 					view.repaint();
 				}
 			}
@@ -225,6 +235,156 @@ public class DrawingController {
 					}
 				} else {
 					JOptionPane.showMessageDialog(frame, "Please select exactly one shape!");
+				}
+			}
+		});
+
+		frame.getBtnSave().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Save File");
+				fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Serialized Drawing (*.bin)", "bin"));
+				fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Text Log (*.txt)", "txt"));
+				if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					String path = file.getAbsolutePath();
+					javax.swing.filechooser.FileFilter filter = fileChooser.getFileFilter();
+					String description = filter.getDescription();
+					
+					if (description.contains(".bin") && !path.toLowerCase().endsWith(".bin")) {
+						file = new File(path + ".bin");
+					} else if (description.contains(".txt") && !path.toLowerCase().endsWith(".txt")) {
+						file = new File(path + ".txt");
+					}
+					
+					try {
+						FileStrategy strategy;
+						if (file.getName().toLowerCase().endsWith(".bin")) {
+							strategy = new DrawingFileStrategy();
+							strategy.save(model.getShapes(), file);
+							JOptionPane.showMessageDialog(frame, "Drawing saved successfully!");
+						} else {
+							strategy = new LogFileStrategy();
+							strategy.save(frame.getTxtAreaLog().getText(), file);
+							JOptionPane.showMessageDialog(frame, "Log saved successfully!");
+						}
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(frame, "Error saving file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
+
+		frame.getBtnLoad().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Open File");
+				fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Serialized Drawing (*.bin)", "bin"));
+				fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Text Log (*.txt)", "txt"));
+				if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					
+					// Detect file type using Java Serialization magic bytes
+					boolean isSerialized = false;
+					try (InputStream is = new FileInputStream(file)) {
+						int b1 = is.read();
+						int b2 = is.read();
+						isSerialized = (b1 == 0xAC && b2 == 0xED);
+					} catch (Exception ex) {
+						// Ignore, default to text log load
+					}
+					
+					if (isSerialized) {
+						try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+							List<Shape> shapes = (List<Shape>) ois.readObject();
+							model.getShapes().clear();
+							for (Shape s : shapes) {
+								model.add(s);
+							}
+							undoStack.clear();
+							redoStack.clear();
+							updateUndoRedoButtons();
+							updateButtonsState();
+							frame.getTxtAreaLog().setText("Drawing loaded successfully.\n");
+							frame.getBtnNextCommand().setEnabled(false);
+							view.repaint();
+							JOptionPane.showMessageDialog(frame, "Drawing loaded successfully!");
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(frame, "Error loading drawing: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						try {
+							logLines = Files.readAllLines(file.toPath());
+							logLineIndex = 0;
+							model.getShapes().clear();
+							undoStack.clear();
+							redoStack.clear();
+							updateUndoRedoButtons();
+							updateButtonsState();
+							frame.getTxtAreaLog().setText("--- Log Loaded. Click 'Next Command' to step through ---\n");
+							frame.getBtnNextCommand().setEnabled(logLineIndex < logLines.size());
+							view.repaint();
+							JOptionPane.showMessageDialog(frame, "Log loaded successfully! Use 'Next Command' to replay.");
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(frame, "Error loading log: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				}
+			}
+		});
+
+		frame.getBtnNextCommand().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (logLineIndex < logLines.size()) {
+					String line = logLines.get(logLineIndex).trim();
+					logLineIndex++;
+					
+					if (line.isEmpty() || line.startsWith("---")) {
+						frame.getBtnNextCommand().setEnabled(logLineIndex < logLines.size());
+						return;
+					}
+					
+					try {
+						if (line.startsWith("Undo:")) {
+							if (!undoStack.isEmpty()) {
+								Command cmd = undoStack.pop();
+								cmd.unexecute();
+								redoStack.push(cmd);
+								updateUndoRedoButtons();
+								updateButtonsState();
+								frame.getTxtAreaLog().append(line + "\n");
+							}
+						} else if (line.startsWith("Redo:")) {
+							if (!redoStack.isEmpty()) {
+								Command cmd = redoStack.pop();
+								cmd.execute();
+								undoStack.push(cmd);
+								updateUndoRedoButtons();
+								updateButtonsState();
+								frame.getTxtAreaLog().append(line + "\n");
+							}
+						} else {
+							Command cmd = parseCommandLine(line);
+							if (cmd != null) {
+								cmd.execute();
+								undoStack.push(cmd);
+								redoStack.clear();
+								updateUndoRedoButtons();
+								updateButtonsState();
+								frame.getTxtAreaLog().append(line + "\n");
+							} else {
+								frame.getTxtAreaLog().append("Skipped/Failed to parse: " + line + "\n");
+							}
+						}
+					} catch (Exception ex) {
+						frame.getTxtAreaLog().append("Error executing command line: " + line + " (" + ex.getMessage() + ")\n");
+					}
+					
+					frame.getBtnNextCommand().setEnabled(logLineIndex < logLines.size());
+					view.repaint();
 				}
 			}
 		});
@@ -497,5 +657,212 @@ public class DrawingController {
 		} else if (shape instanceof HexagonAdapter) {
 			((HexagonAdapter) shape).setInnerColor(color);
 		}
+	}
+
+	public Shape parseShape(String str) {
+		if (str.startsWith("Point(")) {
+			String data = str.substring(6, str.length() - 1);
+			String[] parts = data.split(",");
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			Color c = new Color(Integer.parseInt(parts[2]));
+			Point p = new Point(x, y);
+			p.setColor(c);
+			return p;
+		} else if (str.startsWith("Line(")) {
+			String data = str.substring(5, str.length() - 1);
+			String[] parts = data.split(",");
+			int sx = Integer.parseInt(parts[0]);
+			int sy = Integer.parseInt(parts[1]);
+			int ex = Integer.parseInt(parts[2]);
+			int ey = Integer.parseInt(parts[3]);
+			Color c = new Color(Integer.parseInt(parts[4]));
+			Line l = new Line(new Point(sx, sy), new Point(ex, ey));
+			l.setColor(c);
+			return l;
+		} else if (str.startsWith("Rectangle(")) {
+			String data = str.substring(10, str.length() - 1);
+			String[] parts = data.split(",");
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int w = Integer.parseInt(parts[2]);
+			int h = Integer.parseInt(parts[3]);
+			Color border = new Color(Integer.parseInt(parts[4]));
+			Color inner = new Color(Integer.parseInt(parts[5]));
+			Rectangle r = new Rectangle(new Point(x, y), w, h);
+			r.setBorderColor(border);
+			r.setInnerColor(inner);
+			return r;
+		} else if (str.startsWith("Donut(")) {
+			String data = str.substring(6, str.length() - 1);
+			String[] parts = data.split(",");
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int r = Integer.parseInt(parts[2]);
+			int ir = Integer.parseInt(parts[3]);
+			Color border = new Color(Integer.parseInt(parts[4]));
+			Color inner = new Color(Integer.parseInt(parts[5]));
+			Donut d = new Donut(new Point(x, y), r, ir);
+			d.setBorderColor(border);
+			d.setInnerColor(inner);
+			return d;
+		} else if (str.startsWith("Circle(")) {
+			String data = str.substring(7, str.length() - 1);
+			String[] parts = data.split(",");
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int r = Integer.parseInt(parts[2]);
+			Color border = new Color(Integer.parseInt(parts[3]));
+			Color inner = new Color(Integer.parseInt(parts[4]));
+			Circle c = new Circle(new Point(x, y), r);
+			c.setBorderColor(border);
+			c.setInnerColor(inner);
+			return c;
+		} else if (str.startsWith("Hexagon(")) {
+			String data = str.substring(8, str.length() - 1);
+			String[] parts = data.split(",");
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int r = Integer.parseInt(parts[2]);
+			Color border = new Color(Integer.parseInt(parts[3]));
+			Color inner = new Color(Integer.parseInt(parts[4]));
+			HexagonAdapter h = new HexagonAdapter(new Point(x, y), r);
+			h.setEdgeColor(border);
+			h.setInnerColor(inner);
+			return h;
+		}
+		return null;
+	}
+
+	public Shape findMatchingShape(Shape pattern) {
+		for (Shape s : model.getShapes()) {
+			if (s.getClass().equals(pattern.getClass())) {
+				if (s instanceof Point && pattern instanceof Point) {
+					Point p1 = (Point) s;
+					Point p2 = (Point) pattern;
+					if (p1.getX() == p2.getX() && p1.getY() == p2.getY() && p1.getColor().getRGB() == p2.getColor().getRGB()) {
+						return s;
+					}
+				} else if (s instanceof Line && pattern instanceof Line) {
+					Line l1 = (Line) s;
+					Line l2 = (Line) pattern;
+					if (l1.getStartPoint().getX() == l2.getStartPoint().getX() && l1.getStartPoint().getY() == l2.getStartPoint().getY() &&
+						l1.getEndPoint().getX() == l2.getEndPoint().getX() && l1.getEndPoint().getY() == l2.getEndPoint().getY() &&
+						l1.getColor().getRGB() == l2.getColor().getRGB()) {
+						return s;
+					}
+				} else if (s instanceof Rectangle && pattern instanceof Rectangle) {
+					Rectangle r1 = (Rectangle) s;
+					Rectangle r2 = (Rectangle) pattern;
+					if (r1.getUpperLeftPoint().getX() == r2.getUpperLeftPoint().getX() && r1.getUpperLeftPoint().getY() == r2.getUpperLeftPoint().getY() &&
+						r1.getWidth() == r2.getWidth() && r1.getHeight() == r2.getHeight() &&
+						r1.getBorderColor().getRGB() == r2.getBorderColor().getRGB() && r1.getInnerColor().getRGB() == r2.getInnerColor().getRGB()) {
+						return s;
+					}
+				} else if (s instanceof Donut && pattern instanceof Donut) {
+					Donut d1 = (Donut) s;
+					Donut d2 = (Donut) pattern;
+					if (d1.getCenter().getX() == d2.getCenter().getX() && d1.getCenter().getY() == d2.getCenter().getY() &&
+						d1.getRadius() == d2.getRadius() && d1.getInnerRadius() == d2.getInnerRadius() &&
+						d1.getBorderColor().getRGB() == d2.getBorderColor().getRGB() && d1.getInnerColor().getRGB() == d2.getInnerColor().getRGB()) {
+						return s;
+					}
+				} else if (s instanceof Circle && pattern instanceof Circle) {
+					Circle c1 = (Circle) s;
+					Circle c2 = (Circle) pattern;
+					if (c1.getCenter().getX() == c2.getCenter().getX() && c1.getCenter().getY() == c2.getCenter().getY() &&
+						c1.getRadius() == c2.getRadius() &&
+						c1.getBorderColor().getRGB() == c2.getBorderColor().getRGB() && c1.getInnerColor().getRGB() == c2.getInnerColor().getRGB()) {
+						return s;
+					}
+				} else if (s instanceof HexagonAdapter && pattern instanceof HexagonAdapter) {
+					HexagonAdapter h1 = (HexagonAdapter) s;
+					HexagonAdapter h2 = (HexagonAdapter) pattern;
+					if (h1.getCenter().getX() == h2.getCenter().getX() && h1.getCenter().getY() == h2.getCenter().getY() &&
+						h1.getRadius() == h2.getRadius() &&
+						h1.getEdgeColor().getRGB() == h2.getEdgeColor().getRGB() && h1.getInnerColor().getRGB() == h2.getInnerColor().getRGB()) {
+						return s;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public Command parseCommandLine(String line) {
+		if (line.startsWith("Added:")) {
+			Shape shape = parseShape(line.substring(6));
+			if (shape != null) {
+				return new CmdAddShape(model, shape);
+			}
+		} else if (line.startsWith("Removed:")) {
+			Shape pattern = parseShape(line.substring(8));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdRemoveShape(model, target);
+				}
+			}
+		} else if (line.startsWith("Selected:")) {
+			Shape pattern = parseShape(line.substring(9));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdSelectShape(model, target);
+				}
+			}
+		} else if (line.startsWith("Deselected:")) {
+			Shape pattern = parseShape(line.substring(11));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdDeselectShape(model, target);
+				}
+			}
+		} else if (line.startsWith("Updated:")) {
+			String data = line.substring(8);
+			String[] parts = data.split("->");
+			Shape patternOld = parseShape(parts[0]);
+			Shape newState = parseShape(parts[1]);
+			if (patternOld != null && newState != null) {
+				Shape target = findMatchingShape(patternOld);
+				if (target != null) {
+					return new CmdUpdateShape(target, patternOld, newState);
+				}
+			}
+		} else if (line.startsWith("MovedToFront:")) {
+			Shape pattern = parseShape(line.substring(13));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdToFront(model, target);
+				}
+			}
+		} else if (line.startsWith("MovedToBack:")) {
+			Shape pattern = parseShape(line.substring(12));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdToBack(model, target);
+				}
+			}
+		} else if (line.startsWith("BroughtToFront:")) {
+			Shape pattern = parseShape(line.substring(15));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdBringToFront(model, target);
+				}
+			}
+		} else if (line.startsWith("BroughtToBack:")) {
+			Shape pattern = parseShape(line.substring(14));
+			if (pattern != null) {
+				Shape target = findMatchingShape(pattern);
+				if (target != null) {
+					return new CmdBringToBack(model, target);
+				}
+			}
+		}
+		return null;
 	}
 }

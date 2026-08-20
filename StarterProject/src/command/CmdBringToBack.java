@@ -33,6 +33,6 @@ public class CmdBringToBack implements Command {
 
     @Override
     public String toString() {
-        return "Brought " + shape.getClass().getSimpleName() + " to Back (very bottom)";
+        return "BroughtToBack:" + Command.getShapeLogString(shape);
     }
 }

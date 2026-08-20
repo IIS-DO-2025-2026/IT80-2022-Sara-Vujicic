@@ -24,6 +24,6 @@ public class CmdAddShape implements Command {
 
     @Override
     public String toString() {
-        return "Added " + shape.getClass().getSimpleName() + " at " + shape.toString();
+        return "Added:" + Command.getShapeLogString(shape);
     }
 }

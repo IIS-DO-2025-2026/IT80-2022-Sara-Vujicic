@@ -32,6 +32,6 @@ public class CmdToFront implements Command {
 
     @Override
     public String toString() {
-        return "Moved " + shape.getClass().getSimpleName() + " to Front (forward one position)";
+        return "MovedToFront:" + Command.getShapeLogString(shape);
     }
 }

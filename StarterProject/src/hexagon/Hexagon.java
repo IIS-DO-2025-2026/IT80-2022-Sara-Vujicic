@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;
 
-public class Hexagon {
+public class Hexagon implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int x;
     private int y;
     private int r;

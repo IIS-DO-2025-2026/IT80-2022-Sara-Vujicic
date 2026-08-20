@@ -33,6 +33,6 @@ public class CmdBringToFront implements Command {
 
     @Override
     public String toString() {
-        return "Brought " + shape.getClass().getSimpleName() + " to Front (very top)";
+        return "BroughtToFront:" + Command.getShapeLogString(shape);
     }
 }

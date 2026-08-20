@@ -32,6 +32,6 @@ public class CmdToBack implements Command {
 
     @Override
     public String toString() {
-        return "Moved " + shape.getClass().getSimpleName() + " to Back (backward one position)";
+        return "MovedToBack:" + Command.getShapeLogString(shape);
     }
 }

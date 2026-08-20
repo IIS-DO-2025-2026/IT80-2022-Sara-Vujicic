@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import javax.swing.BorderFactory;
 import javax.swing.border.EmptyBorder;
@@ -43,6 +45,10 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 	private final JButton btnActiveInnerColor;
 	private final JButton btnUndo;
 	private final JButton btnRedo;
+	private final JButton btnSave;
+	private final JButton btnLoad;
+	private final JButton btnNextCommand;
+	private final JTextArea txtAreaLog;
 
 	public DrawingFrame() {
 		setTitle("Vujicic Sara IT80/2022");
@@ -100,6 +106,14 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 		btnUndo.setEnabled(false);
 		btnRedo.setEnabled(false);
 
+		btnSave = new JButton("Save");
+		btnLoad = new JButton("Load");
+		btnNextCommand = new JButton("Next Command");
+		btnNextCommand.setEnabled(false);
+
+		txtAreaLog = new JTextArea(8, 50);
+		txtAreaLog.setEditable(false);
+
 		updateColorButton(btnActiveEdgeColor, activeEdgeColor);
 		updateColorButton(btnActiveInnerColor, activeInnerColor);
 
@@ -121,6 +135,9 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 		btnActiveInnerColor.putClientProperty("JButton.buttonType", "roundRect");
 		btnUndo.putClientProperty("JButton.buttonType", "roundRect");
 		btnRedo.putClientProperty("JButton.buttonType", "roundRect");
+		btnSave.putClientProperty("JButton.buttonType", "roundRect");
+		btnLoad.putClientProperty("JButton.buttonType", "roundRect");
+		btnNextCommand.putClientProperty("JButton.buttonType", "roundRect");
 
 		tglBtnPoint.setToolTipText("Draw points on click");
 		tglBtnLine.setToolTipText("Select two points to draw a line");
@@ -139,6 +156,9 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 		btnActiveInnerColor.setToolTipText("Change default fill/inner color for new shapes");
 		btnUndo.setToolTipText("Undo the last operation");
 		btnRedo.setToolTipText("Redo the last undone operation");
+		btnSave.setToolTipText("Save drawing or text log to a file");
+		btnLoad.setToolTipText("Load serialized drawing or text log from a file");
+		btnNextCommand.setToolTipText("Execute the next command from the loaded log file");
 
 		
 		toolbar.add(tglBtnPoint);
@@ -171,6 +191,13 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 		toolbar.add(btnUndo);
 		toolbar.add(btnRedo);
 
+		toolbar.addSeparator(new Dimension(15, 10));
+
+		// Group 5: File operations
+		toolbar.add(btnSave);
+		toolbar.add(btnLoad);
+		toolbar.add(btnNextCommand);
+
 		
 		ButtonGroup btnGroup = new ButtonGroup();
 		btnGroup.add(tglBtnPoint);
@@ -185,6 +212,7 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 		setLayout(new BorderLayout());
 		add(toolbar, BorderLayout.NORTH);
 		add(view, BorderLayout.CENTER);
+		add(new javax.swing.JScrollPane(txtAreaLog), BorderLayout.SOUTH);
 	}
 
 	public DrawingView getView() {
@@ -267,6 +295,22 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 
 	public JButton getBtnRedo() {
 		return btnRedo;
+	}
+
+	public JButton getBtnSave() {
+		return btnSave;
+	}
+
+	public JButton getBtnLoad() {
+		return btnLoad;
+	}
+
+	public JButton getBtnNextCommand() {
+		return btnNextCommand;
+	}
+
+	public JTextArea getTxtAreaLog() {
+		return txtAreaLog;
 	}
 
 	public JButton getBtnToFront() {
