@@ -501,6 +501,7 @@ public class DrawingController {
 				PointDialog dialog = new PointDialog(frame, p);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getPoint();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
@@ -509,6 +510,7 @@ public class DrawingController {
 				LineDialog dialog = new LineDialog(frame, l);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getLine();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
@@ -517,6 +519,7 @@ public class DrawingController {
 				RectangleDialog dialog = new RectangleDialog(frame, r);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getRectangle();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
@@ -525,6 +528,7 @@ public class DrawingController {
 				DonutDialog dialog = new DonutDialog(frame, d);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getDonut();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
@@ -533,6 +537,7 @@ public class DrawingController {
 				CircleDialog dialog = new CircleDialog(frame, c);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getCircle();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
@@ -541,6 +546,7 @@ public class DrawingController {
 				HexagonDialog dialog = new HexagonDialog(frame, h);
 				dialog.setVisible(true);
 				if (dialog.isConfirmed()) {
+					newState = dialog.getHexagon();
 					CmdUpdateShape cmd = new CmdUpdateShape(selected, oldState, newState);
 					executeCommand(cmd);
 				}
