@@ -170,7 +170,7 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 
 		toolbar.addSeparator(new Dimension(15, 10));
 
-		// Group 2: Operations
+		
 		toolbar.add(tglBtnSelect);
 		toolbar.add(btnModify);
 		toolbar.add(btnDelete);
@@ -193,7 +193,7 @@ public class DrawingFrame extends JFrame implements PropertyChangeListener {
 
 		toolbar.addSeparator(new Dimension(15, 10));
 
-		// Group 5: File operations
+		
 		toolbar.add(btnSave);
 		toolbar.add(btnLoad);
 		toolbar.add(btnNextCommand);
